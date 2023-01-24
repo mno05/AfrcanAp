@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
+import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/LoginTextField.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
 
 class LoginVue extends StatefulWidget {
   const LoginVue({super.key});
@@ -13,9 +19,43 @@ class LoginVue extends StatefulWidget {
 }
 
 class _LoginVueState extends State<LoginVue> {
+  final _key = GlobalKey<FormState>();
+  TextEditingController emailTelephone = TextEditingController();
+  TextEditingController passW = TextEditingController();
+
+  void Login(BuildContext context,String Email_phoneNumber, String motDepasse) async {
+    
+    final reponse = await http.post(
+        Uri.parse("http://10.0.2.2/African_Ap/login.php/"),
+        body: {"email_telephone": Email_phoneNumber, "passw": motDepasse});
+    if (reponse.statusCode == 200) {
+      try {
+        BasicsWidgets.Load(context);
+        String rs = reponse.body.toString().replaceAll("\n", "");
+        var data = jsonDecode(rs);
+        var resultat = data["data"];
+        int succes = resultat[1];
+        if(succes==1){
+          //Passer à Main
+        }else{
+          Navigator.pop(context);
+          Toast.show(resultat[0],duration: 3);
+        }
+        print(succes);
+      } catch (e) {
+        print(e);
+
+      }
+    //   var data = jsonDecode(reponse.body);
+    //   print(data);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     return Scaffold(
+      
       backgroundColor: Color(0xffEB7D30),
       body: SingleChildScrollView(
         child: Padding(
@@ -55,31 +95,48 @@ class _LoginVueState extends State<LoginVue> {
                       ),
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        LoginTf(
-                          hintText: "Nom/Téléphone",
-                        ),
-                        SizedBox(
-                          height: Media.height(context) * 0.02,
-                        ),
-                        LoginTf(
-                          hintText: "Mot de passe",
-                        ),
-                        SizedBox(height: Media.height(context) * 0.03),
-                        ButtonCusm(
-                          text: "Connexion",
-                          onPressed:(){},
-                        ),
-                        SizedBox(height: Media.height(context) * 0.02),
-                        ButtonCusm(
-                          text: "Inscrription",
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Inscription(),));
-                          },
-                        ),
-                      ],
+                    child: Form(
+                      key: _key,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LoginTf(
+                            Tcontroller: emailTelephone,
+                            hintText: "Email/Téléphone",
+                            err: "Veuilez entrer un nom ou un numéro svp",
+                          ),
+                          SizedBox(
+                            height: Media.height(context) * 0.02,
+                          ),
+                          LoginTf(
+                            Tcontroller: passW,
+                            hintText: "Mot de passe",
+                            err: "Vous devez entrer un mot de passe",
+                            isPassW: true,
+                          ),
+                          SizedBox(height: Media.height(context) * 0.03),
+                          ButtonCusm(
+                            text: "Connexion",
+                            onPressed: () {
+                              if (_key.currentState!.validate()) {
+                                // BasicsWidgets.Load(context);
+                                Login(context,emailTelephone.text, passW.text);
+                              }
+                            },
+                          ),
+                          SizedBox(height: Media.height(context) * 0.02),
+                          ButtonCusm(
+                            text: "Inscrription",
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Inscription(),
+                                  ));
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

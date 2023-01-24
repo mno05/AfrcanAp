@@ -5,19 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageProfil extends StatefulWidget {
-  const ImageProfil({super.key});
+  var img;
+   ImageProfil({super.key,this.img});
 
   @override
   State<ImageProfil> createState() => _ImageProfilState();
 }
 
 class _ImageProfilState extends State<ImageProfil> {
+      getImage(){
+      if(_imageFile!=null){
+      return _imageFile!.path;
+      }else{
+        return "img/profil.png";
+      }
+    }
   PickedFile? _imageFile;
   ImagePicker _imagePicker = ImagePicker();
   void takePhoto(ImageSource source) async {
     final pickedfile = await _imagePicker.getImage(source: source);
     setState(() {
       _imageFile = pickedfile;
+      widget.img= _imageFile;
     });
   }
 
