@@ -1,4 +1,4 @@
-import 'package:african_ap/Vue/LoginVue.dart';
+import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        
       ),
       home: const LoginVue(),
     );
