@@ -20,6 +20,7 @@ class BasicsWidgets {
 
   static Load(BuildContext context) {
     showDialog(
+      barrierDismissible: false,
         context: context,
         builder: ((context) {
           return Center(

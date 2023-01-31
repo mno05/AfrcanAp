@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
+import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/LoginTextField.dart';
@@ -24,25 +25,30 @@ class _LoginVueState extends State<LoginVue> {
   TextEditingController passW = TextEditingController();
 
   void Login(BuildContext context,String Email_phoneNumber, String motDepasse) async {
-    
+    //localhost http://10.0.2.2/African_Ap/login.php/
+        BasicsWidgets.Load(context);
     final reponse = await http.post(
-        Uri.parse("http://10.0.2.2/African_Ap/login.php/"),
+        Uri.parse("https://africanap.000webhostapp.com/african_ap/login.php/"),
         body: {"email_telephone": Email_phoneNumber, "passw": motDepasse});
     if (reponse.statusCode == 200) {
+      
       try {
-        BasicsWidgets.Load(context);
         String rs = reponse.body.toString().replaceAll("\n", "");
         var data = jsonDecode(rs);
         var resultat = data["data"];
+        var user = resultat[2];
         int succes = resultat[1];
         if(succes==1){
-          //Passer à Main
+        // print(user["email"]);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Principal(prenom: user["Prenom"], nom: user["nom"], telephone: user["telephone"], email: user["email"], img: user["image"]),));
         }else{
           Navigator.pop(context);
           Toast.show(resultat[0],duration: 3);
         }
         print(succes);
       } catch (e) {
+        Navigator.pop(context);
+          Toast.show(e.toString(),duration: 3);
         print(e);
 
       }
@@ -103,7 +109,7 @@ class _LoginVueState extends State<LoginVue> {
                           LoginTf(
                             Tcontroller: emailTelephone,
                             hintText: "Email/Téléphone",
-                            err: "Veuilez entrer un nom ou un numéro svp",
+                            err: "Veuilez entrer un email ou un numéro svp",
                           ),
                           SizedBox(
                             height: Media.height(context) * 0.02,

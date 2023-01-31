@@ -35,7 +35,7 @@ class _ImageProfilState extends State<ImageProfil> {
     return Container(
       child: Stack(children: [
         CircleAvatar(
-          radius: 80.0,
+          radius: Media.width(context)*0.18,
           backgroundImage: _imageFile == null
               ? AssetImage("img/profil.png")
               : FileImage(File(_imageFile!.path)) as ImageProvider,
