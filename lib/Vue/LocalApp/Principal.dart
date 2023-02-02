@@ -5,6 +5,7 @@ import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
+import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/Drawer.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
@@ -134,6 +135,7 @@ class _PrincipalState extends State<Principal> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigation(isHome: true),
     );
   }
 }

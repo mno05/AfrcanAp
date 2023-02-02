@@ -1,5 +1,7 @@
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/LocalApp/Contacts.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
+import 'package:african_ap/Vue/LocalApp/Messagerie.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:flutter/material.dart';
 
