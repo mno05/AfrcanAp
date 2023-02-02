@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/Drawer.dart';
@@ -30,16 +31,19 @@ class Principal extends StatefulWidget {
 }
 
 class _PrincipalState extends State<Principal> {
-  Widget ActionContainer(IconData icon) {
-    return Padding(
-      padding: EdgeInsets.all(8),
-      child: Container(
-        width: 40,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40),
-          color: Colors.white30,
+  Widget ActionContainer(IconData icon, {required void Function()? tap}) {
+    return InkWell(
+      onTap: tap,
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Container(
+          width: 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40),
+            color: Colors.white30,
+          ),
+          child: Icon(icon),
         ),
-        child: Icon(icon),
       ),
     );
   }
@@ -83,8 +87,16 @@ class _PrincipalState extends State<Principal> {
       appBar: AppBar(
         backgroundColor: Color(0xffEB7D30),
         actions: [
-          ActionContainer(Icons.message),
-          ActionContainer(Icons.notifications),
+          ActionContainer(
+            Icons.message,
+            tap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Message(),));
+            },
+          ),
+          ActionContainer(
+            Icons.notifications,
+            tap: (){},
+          ),
         ],
       ),
       body: Container(
