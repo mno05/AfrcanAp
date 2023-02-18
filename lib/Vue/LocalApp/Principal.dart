@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
+import 'package:african_ap/Vue/LocalApp/PostVue.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
@@ -12,19 +14,10 @@ import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:flutter/material.dart';
 
 class Principal extends StatefulWidget {
-  String prenom;
-  String nom;
-  String telephone;
-  String email;
-  String img;
-
+  User user;
   Principal({
     super.key,
-    required this.prenom,
-    required this.nom,
-    required this.telephone,
-    required this.email,
-    required this.img,
+    required this.user,
   });
 
   @override
@@ -50,32 +43,20 @@ class _PrincipalState extends State<Principal> {
   }
 
   Widget PostTF() {
-    return Container(
-      height: Media.height(context) * 0.06,
-      width: Media.width(context) / 1.5,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(40),
-          color: Colors.white,
-          border: Border.all(
-            color: Colors.black45,
-            width: 2,
-          )),
-      child: Padding(
-        padding: EdgeInsets.only(left: 3, top: 0),
-        child: TextField(
-          decoration: InputDecoration(
-            icon: SizedBox(
-              width: 10,
-            ),
-            hintText: "Commencer un post",
-            hintStyle: TextStyle(
-              fontSize: 16,
-              // fontFamily: "Milky",
-            ),
-            border: InputBorder.none,
-          ),
-        ),
+    return InkWell(
+      child: Container(
+        height: Media.height(context) * 0.06,
+        width: Media.width(context) / 1.5,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40),
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.black45,
+              width: 2,
+            )),
+        child: Center(child: Text("Commencer un post")),
       ),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => PostVue(user: widget.user,),)),
     );
   }
 
@@ -84,7 +65,11 @@ class _PrincipalState extends State<Principal> {
     double h = Media.height(context);
     double w = Media.width(context);
     return Scaffold(
-      drawer: DrawerC(),
+      drawer: DrawerC(
+        prenom: widget.user.prenom,
+        nom: widget.user.nom,
+        pathImage: widget.user.imageName,
+      ),
       appBar: AppBar(
         backgroundColor: Color(0xffEB7D30),
         actions: [
@@ -117,7 +102,8 @@ class _PrincipalState extends State<Principal> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage("img/profil.png"),
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(widget.user.imageName,),
                         radius: h * 0.03,
                       ),
                       SizedBox(width: 10),

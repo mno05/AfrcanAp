@@ -1,17 +1,47 @@
+import 'dart:developer';
+
+import 'package:african_ap/Controllers/ContactsController.dart';
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
+import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
 import 'package:flutter/material.dart';
 
 class Contacts extends StatefulWidget {
-  const Contacts({super.key});
+  final SuperUser superUser;
+  const Contacts({super.key, required this.superUser});
 
   @override
   State<Contacts> createState() => _ContactsState();
 }
 
 class _ContactsState extends State<Contacts> {
+  List<SuperUser> superUsers = [];
+
+  remplirUsers() async {
+    await ContactsController.AllContacts().then((value) {
+      var isMe;
+      value.forEach((element) {
+        if (element.adresseMail == widget.superUser.adresseMail) {
+          isMe = element;
+        }
+      });
+      value.remove(isMe);
+      setState(() {
+        superUsers = value;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    remplirUsers();
+    super.initState();
+  }
+
   TextEditingController tx = TextEditingController();
   Widget ChearcheTF() {
     return Container(
@@ -70,17 +100,26 @@ class _ContactsState extends State<Contacts> {
   Widget build(BuildContext context) {
     double h = Media.height(context);
     double w = Media.width(context);
+    remplirUsers;
+    log(superUsers.length.toString());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppData.BasicColor,
+        toolbarHeight: h * 0.08,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(widget.superUser.imagePath),
+            radius: 10,
+          ),
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CircleAvatar(
-              backgroundImage: AssetImage("img/profil.png"),
-              radius: 15,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ChearcheTF(),
             ),
-            ChearcheTF(),
             ActionContainer(
               Icons.message,
               tap: () {},
@@ -89,30 +128,93 @@ class _ContactsState extends State<Contacts> {
         ),
         // actions: [],
       ),
-      body: Container(
-        height: h,
-        width: w,
-        padding: EdgeInsets.all((8)),
-        child: ListView(
-          children: [
-            ListTile(
-              leading: CircleAvatar(
-                backgroundImage: AssetImage("img/profil.png"),
-                radius: 18,
-              ),
-              title: Text(
-                "Moïse NDJADI",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-                
-              ),
-              subtitle: Text("Informaticien"),
+      body: superUsers.length == 0
+          ? Center(
+              child: CircularProgressIndicator(
+              color: AppData.BasicColor,
+            ))
+          : ListView.builder(
+              itemCount: superUsers.length,
+              itemBuilder: (context, index) {
+                log(index.toString());
+                return Column(children: [
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(superUsers[index].imagePath),
+                      radius: 25,
+                      backgroundColor: Colors.grey,
+                    ),
+                    title: Text(
+                      "${superUsers[index].prenom} ${superUsers[index].nom}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text("${superUsers[index].domainesExpertise}"),
+                    trailing: Text(
+                      "Membre ${superUsers[index].type}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: () {
+                      BasicsWidgets.YesOrNoDialogue(
+                        "Envoyer une demande de discussion à ${superUsers[index].prenom} ${superUsers[index].nom} ?",
+                        context,
+                        Titre: "Demande de Discussion",
+                        YesText: "Oui",
+                        NoText: "Non",
+                        NonPressed: () => Navigator.pop(context),
+                        YesPressed: () {},
+                      );
+                    },
+                  ),
+                ]);
+              },
+              // itemBuilder: (context, index) =>
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigation(isSearch: true),
+    );
+  }
+
+  Container Contact(
+    double h,
+    double w, {
+    required String path,
+    required String nom,
+    required String prenom,
+    required String domaine,
+    required String type,
+  }) {
+    return Container(
+      height: h * 0.08,
+      width: w,
+      padding: EdgeInsets.all((8)),
+      child: ListView(
+        scrollDirection: Axis.vertical,
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(path),
+              radius: 18,
+            ),
+            title: Text(
+              "$prenom $nom",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: Text("$domaine"),
+            trailing: Text(
+              "Membre $type",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

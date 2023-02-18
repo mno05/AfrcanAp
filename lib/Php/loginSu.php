@@ -4,7 +4,7 @@ $email_telephone = $_POST["email_telephone"];
 $passw = sha1($_POST["passw"]);
 try {
     if(isset($email_telephone,$passw)){
-        $req = $db->prepare("SELECT * FROM user WHERE (email=? OR telephone=?) AND passW=?");
+        $req = $db->prepare("SELECT * FROM SuperUser WHERE (adresseMail=? OR telephone=?) AND mtp=?");
         $req->execute(array($email_telephone,$email_telephone,$passw));
         $exist = $req->rowCount();
         if($exist==1){

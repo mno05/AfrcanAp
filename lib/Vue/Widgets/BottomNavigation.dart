@@ -1,9 +1,17 @@
+import 'dart:io';
+
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/Data/SaveSuperUser.dart';
+import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Models/SuperUser.dart';
+import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
+import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Contacts.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/LocalApp/Messagerie.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
+import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +55,19 @@ class BottomNavigation extends StatelessWidget {
                 )
               : IconButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Messagerie(),));
+                    SaveUser.getUser().then((value) {
+                      if (value.isLambda) {
+                        BasicsWidgets.alert(
+                            "Vous n'etes pas éligible aux messages, veuillez adhérer la plateforme",
+                            context);
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Messagerie(),
+                            ));
+                      }
+                    });
                   },
                   icon: Icon(
                     CupertinoIcons.ellipses_bubble_fill,
@@ -75,8 +95,13 @@ class BottomNavigation extends StatelessWidget {
                   ],
                 )
               : IconButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Principal(prenom: "prenom", nom: "nom", telephone: "telephone", email: "email", img: "img"),));
+                  onPressed: () async {
+                    User user = await SaveUser.getUser();
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Principal(user: user),
+                        ));
                   },
                   icon: Icon(
                     Icons.home_sharp,
@@ -105,7 +130,21 @@ class BottomNavigation extends StatelessWidget {
                 )
               : IconButton(
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>Contacts() ,));
+                    SaveUser.getUser().then((value) {
+                      if (value.isLambda) {
+                        BasicsWidgets.alert(
+                            "Vous ne pouvez pas Contacter les membres, veuillez adhérer la plateforme",
+                            context);
+                      } else {
+                        SaveSuperUser.getSuperUser().then((value) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Contacts(superUser: value),
+                              ));
+                        });
+                      }
+                    });
                   },
                   icon: Icon(
                     CupertinoIcons.search,

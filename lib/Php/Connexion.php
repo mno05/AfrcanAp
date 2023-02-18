@@ -1,11 +1,14 @@
 <?php
-$host = "localhost";
-$dbname = "african_ap";
-$user = "root";
-$pass = "";
+$host = "vps83035.serveur-vps.net";
+$dbname = "myapbe";
+$user = "admin_myap";
+$pass = "PibWgC4!EbcR";
+
 try {
     $db = new PDO("mysql:host=$host; dbname=$dbname", $user, $pass);
-    echo ("Connected");
+    // echo json_encode([
+    //     "Connexion reussie"
+    // ]);
 } catch (\Throwable $th) {
     echo ("Erreur de connexion:" . $th->getMessage());
 }

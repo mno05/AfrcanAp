@@ -1,16 +1,14 @@
 import 'dart:convert';
-import 'dart:math';
-
+import 'dart:developer';
+import 'dart:io';
+import 'package:african_ap/Controllers/InscriptionController.dart';
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
-import 'package:african_ap/Vue/LocalApp/Principal.dart';
-import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
-import 'package:african_ap/Vue/Widgets/ImageProfil.dart';
 import 'package:african_ap/Vue/Widgets/InscriptionTextField.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:toast/toast.dart';
 
@@ -29,62 +27,25 @@ class _InscriptionState extends State<Inscription> {
   TextEditingController passw = TextEditingController();
   TextEditingController conPassW = TextEditingController();
   final _key = GlobalKey<FormState>();
-  ImageProfil img = ImageProfil();
+
+  //Variables fonction  pour l'imageProfil
+
+  XFile? _imageFile;
+  ImagePicker _imagePicker = ImagePicker();
+  late String imgdata;
+  String imgName = "";
+  File img = File("");
+  takePhoto(ImageSource source) async {
+    final pickedfile = await _imagePicker.pickImage(source: source);
+    setState(() {
+      _imageFile = pickedfile;
+      img = File(_imageFile!.path);
+      imgName = _imageFile!.path.split("/").last;
+      imgdata = base64Encode(img.readAsBytesSync());
+    });
+  }
 
 //Inscription Méthode
-
-  void Inscription(
-    String prenom,
-    String nom,
-    String telephone,
-    String email,
-    String passw,
-    String image,
-  ) async {
-    BasicsWidgets.Load(context);
-
-    //localhost  // http://10.0.2.2/African_Ap/inscription.php/
-
-    final Response = await http.post(
-        Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/inscription.php/"),
-        body: {
-          "prenom": prenom,
-          "nom": nom,
-          "telephone": telephone,
-          "email": email,
-          "passw": passw,
-          "image": image,
-        });
-    if (Response.statusCode == 200) {
-      try {
-        String rs = Response.body.toString().replaceAll("\n", "");
-        var data = jsonDecode(rs);
-        var resultat = data["data"];
-        int succes = resultat[1];
-        if (succes == 1) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Principal(
-                    prenom: prenom,
-                    nom: nom,
-                    telephone: telephone,
-                    email: email,
-                    img: image),
-              ));
-        } else {
-          Navigator.pop(context);
-          Toast.show(resultat[0], duration: 3);
-        }
-        print(succes);
-      } catch (e) {
-        Navigator.pop(context);
-        Toast.show(e.toString(), duration: 3);
-        // print(e);
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +76,7 @@ class _InscriptionState extends State<Inscription> {
                         SizedBox(
                           height: Media.height(context) * 0.03,
                         ),
-                        img,
+                        ImageProfil(),
                         SizedBox(
                           height: Media.height(context) * 0.03,
                         ),
@@ -193,17 +154,22 @@ class _InscriptionState extends State<Inscription> {
                                     onPressed: () {
                                       if (_key.currentState!.validate()) {
                                         if (passw.text == conPassW.text) {
-                                          Inscription(
-                                              prenom.text,
-                                              nom.text,
-                                              email.text,
-                                              telephone.phoneNumber!,
-                                              passw.text,
-                                              "img");
+                                          InscriptionController.UserInscription(
+                                            context,
+                                            User(
+                                              prenom: prenom.text,
+                                              nom: nom.text,
+                                              telephone: telephone.phoneNumber!,
+                                              email: email.text,
+                                              passw: passw.text,
+                                              imageName: imgName,
+                                              imageData: img,
+                                            ),
+                                          );
                                         } else {
                                           Toast.show(
-                                              "Le mot de passe diffère sa confirmation",
-                                              duration: 3);
+                                            "Le mot de passe diffère sa confirmation",
+                                          );
                                         }
                                       }
                                     }),
@@ -219,6 +185,92 @@ class _InscriptionState extends State<Inscription> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget ImageProfil() {
+    return Container(
+      child: Stack(children: [
+        CircleAvatar(
+          radius: Media.width(context) * 0.18,
+          backgroundImage: _imageFile == null
+              ? AssetImage("img/profil.png")
+              : FileImage(File(_imageFile!.path)) as ImageProvider,
+        ),
+        Positioned(
+          bottom: 20.0,
+          right: 20.0,
+          child: InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                  context: context, builder: (builder) => bottomSheet(context));
+            },
+            child: Icon(
+              Icons.camera_alt,
+              color: Colors.white,
+              size: 30.0,
+            ),
+          ),
+        )
+      ]),
+    );
+  }
+
+  Widget bottomSheet(BuildContext context) {
+    return Container(
+      height: 100,
+      width: Media.width(context),
+      margin: EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 20,
+      ),
+      child: Column(
+        children: [
+          Text("Photo de Profil", style: TextStyle(fontSize: 20)),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                icon: Icon(
+                  Icons.camera,
+                  color: AppData.BasicColor,
+                ),
+                onPressed: () {
+                  setState(() {
+                    takePhoto(ImageSource.camera);
+                  });
+                  Navigator.pop(context);
+                },
+                label: Text(
+                  "Caméra",
+                  style: TextStyle(
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                icon: Icon(
+                  Icons.image,
+                  color: AppData.BasicColor,
+                ),
+                onPressed: () {
+                  setState(() {
+                    takePhoto(ImageSource.gallery);
+                  });
+                  Navigator.pop(context);
+                },
+                label: Text(
+                  "Galerie",
+                  style: TextStyle(
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

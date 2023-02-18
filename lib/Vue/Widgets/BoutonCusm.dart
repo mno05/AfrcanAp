@@ -1,10 +1,12 @@
+import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:flutter/material.dart';
 
 class ButtonCusm extends StatelessWidget {
   String text;
+  bool isOther;
   void Function()? onPressed;
-  ButtonCusm({super.key, required this.text, required this.onPressed});
+  ButtonCusm({super.key, required this.text, required this.onPressed,this.isOther=false});
 
 
   @override
@@ -15,7 +17,7 @@ class ButtonCusm extends StatelessWidget {
         height: Media.height(context) * 0.05,
         width: 150,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20), color: Colors.white),
+            borderRadius: BorderRadius.circular(20), color:isOther?AppData.BasicColor: Colors.white),
         child: Center(
             child: Container(
           width: double.infinity,

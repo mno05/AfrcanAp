@@ -1,10 +1,25 @@
+import 'dart:async';
+
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/Data/SaveSuperUser.dart';
+import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
+import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Parametre.dart';
+import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:flutter/material.dart';
 
 class DrawerC extends StatelessWidget {
-  const DrawerC({super.key});
+  final String prenom;
+  final String nom;
+  final String pathImage;
+  const DrawerC({
+    super.key,
+    required this.prenom,
+    required this.nom,
+    required this.pathImage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +46,14 @@ class DrawerC extends StatelessWidget {
                   child: Column(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage("img/profil.png"),
+                        backgroundImage: NetworkImage(pathImage),
                         radius: h * 0.07,
                       ),
                       SizedBox(
                         height: 5,
                       ),
                       Text(
-                        "CHRISTIAN MATONDO",
+                        "$prenom $nom",
                         style: TextStyle(
                           color: AppData.BasicColor,
                           fontWeight: FontWeight.bold,
@@ -172,7 +187,11 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Parametre(),));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Parametre(),
+                      ));
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,
@@ -192,11 +211,17 @@ class DrawerC extends StatelessWidget {
                     fontSize: 12,
                   ),
                 ),
-              
               ),
               ListTile(
                 onTap: () {
-                  print("Déconnexion");
+                  BasicsWidgets.Load(context);
+                  Timer(Duration(seconds: 3), (() {
+                    SaveUser.SupprimerUser();
+                    SaveSuperUser.Supprimer();
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => LoginVue(),
+                    ));
+                  }));
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,

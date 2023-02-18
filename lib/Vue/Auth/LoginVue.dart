@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:african_ap/Controllers/LoginController.dart';
+import 'package:african_ap/Controllers/SingInWith.dart';
+import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
@@ -9,59 +13,30 @@ import 'package:african_ap/Vue/Widgets/LoginTextField.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
 class LoginVue extends StatefulWidget {
   const LoginVue({super.key});
-
   @override
   State<LoginVue> createState() => _LoginVueState();
 }
 
 class _LoginVueState extends State<LoginVue> {
+  @override
+  void initState() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    super.initState();
+  }
+
   final _key = GlobalKey<FormState>();
   TextEditingController emailTelephone = TextEditingController();
   TextEditingController passW = TextEditingController();
-
-  void Login(BuildContext context,String Email_phoneNumber, String motDepasse) async {
-    //localhost http://10.0.2.2/African_Ap/login.php/
-        BasicsWidgets.Load(context);
-    final reponse = await http.post(
-        Uri.parse("https://africanap.000webhostapp.com/african_ap/login.php/"),
-        body: {"email_telephone": Email_phoneNumber, "passw": motDepasse});
-    if (reponse.statusCode == 200) {
-      
-      try {
-        String rs = reponse.body.toString().replaceAll("\n", "");
-        var data = jsonDecode(rs);
-        var resultat = data["data"];
-        var user = resultat[2];
-        int succes = resultat[1];
-        if(succes==1){
-        // print(user["email"]);
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Principal(prenom: user["Prenom"], nom: user["nom"], telephone: user["telephone"], email: user["email"], img: user["image"]),));
-        }else{
-          Navigator.pop(context);
-          Toast.show(resultat[0],duration: 3);
-        }
-        print(succes);
-      } catch (e) {
-        Navigator.pop(context);
-          Toast.show(e.toString(),duration: 3);
-        print(e);
-
-      }
-    //   var data = jsonDecode(reponse.body);
-    //   print(data);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     ToastContext().init(context);
     return Scaffold(
-      
       backgroundColor: Color(0xffEB7D30),
       body: SingleChildScrollView(
         child: Padding(
@@ -80,7 +55,7 @@ class _LoginVueState extends State<LoginVue> {
                   CircleAvatar(
                     backgroundColor: Colors.white,
                     radius: 45,
-                    child: Text("LOGO"),
+                    child: Image.asset("img/logo.png"),
                   ),
                   SizedBox(height: Media.height(context) * 0.03),
                   Text(
@@ -121,12 +96,38 @@ class _LoginVueState extends State<LoginVue> {
                             isPassW: true,
                           ),
                           SizedBox(height: Media.height(context) * 0.03),
+                          Container(
+                            
+                            padding: EdgeInsets.all(2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(onPressed: (){
+                                  SignWith.google();
+                                }, icon: Image.asset('img/google_logo.webp'),iconSize: 50,),
+                                IconButton(onPressed: (){}, icon: Icon(Icons.facebook,color: Colors.blue),iconSize: 50),
+                                IconButton(onPressed: (){}, icon: Image.asset('img/linkedin.png'),iconSize: 50,),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: Media.height(context) * 0.03),
+
                           ButtonCusm(
                             text: "Connexion",
                             onPressed: () {
                               if (_key.currentState!.validate()) {
-                                // BasicsWidgets.Load(context);
-                                Login(context,emailTelephone.text, passW.text);
+                                LoginController.UserLogin(
+                                  context,
+                                  User(
+                                    prenom: "",
+                                    nom: "",
+                                    telephone: "",
+                                    email: emailTelephone.text,
+                                    passw: passW.text,
+                                    imageName: "",
+                                    imageData: File(""),
+                                  ),
+                                );
                               }
                             },
                           ),
@@ -134,7 +135,7 @@ class _LoginVueState extends State<LoginVue> {
                           ButtonCusm(
                             text: "Inscrription",
                             onPressed: () {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => Inscription(),
