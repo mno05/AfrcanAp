@@ -8,6 +8,7 @@ import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/IntroductionScreen.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -53,6 +54,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return AnimatedSplashScreen(
+        duration: 3000,
+        splash: Image.asset("img/logo.png"),
+        splashIconSize: MediaQuery.of(context).size.height * 0.15,
+        nextScreen: SplashScreen(),
+        splashTransition: SplashTransition.fadeTransition,
+        backgroundColor: Colors.white);
     // Timer(
     //   Duration(seconds: 3),
     //   () => Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -60,21 +68,6 @@ class _SplashScreenState extends State<SplashScreen> {
     //   )),
     // );
     // super.initState();
-    return Scaffold(
-      body: Center(
-        child: Container(
-          height: 150,
-          width: 150,
-          child: Image.asset("img/logo.png"),
-        ),
-      ),
-      // body: Center(
-      //   child: ElevatedButton(
-      //     onPressed: ()
-      //     },
-      //     child: Text("Continuer"),
-      //   ),
-      // ),
-    );
+
   }
 }

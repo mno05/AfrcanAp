@@ -1,10 +1,10 @@
 <?php
 include("connexion.php");
-
+$idDes=$_POST["idDes"];
 try {
 
-    $res = $db->query("SELECT * FROM SuperUser");
-    //Initialiser un tableau
+    $res = $db->prepare("SELECT * FROM SuperUser WHERE idSuper in (SELECT idEx FROM Contacter WHERE idDes =?)");
+    $res->execute(array($idDes));
     $data = array();
     //Récupérer les lignes
     while ($row = $res->fetch()) {

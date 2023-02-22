@@ -1,23 +1,96 @@
+import 'dart:async';
+import 'dart:developer';
+import 'package:african_ap/Controllers/ContactsController.dart';
+import 'package:african_ap/Controllers/MessageController.dart';
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/Models/Message.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
-import 'package:african_ap/Vue/Widgets/StateCircle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 
 class Messagerie extends StatefulWidget {
-  const Messagerie({super.key});
-
+  final SuperUser superUser;
+  const Messagerie({super.key, required this.superUser});
   @override
   State<Messagerie> createState() => _MessagerieState();
 }
 
 class _MessagerieState extends State<Messagerie> {
+  List<SuperUser> superUsers = [];
+  List<Messages> msg = [];
+  Map<String, List<Messages>> IdExAnMessages = {};
+  Map<String, List<Messages>> recup = {};
+
+  bool NoMessage = false;
+  remplirUsersEtMessages() async {
+    await ContactsController.ContactMessage(widget.superUser.idSuper!)
+        .then((Su) {
+      Su.forEach((element) {
+        MessageController.getMessage(
+                idEx: element.idSuper!, idDes: widget.superUser.idSuper!)
+            .then((ListMessages) {
+          setState(() {
+            msg.addAll(ListMessages);
+            recup.addAll({element.idSuper!: msg});
+            msg.clear();
+          });
+        });
+        MessageController.getMessage(
+                idDes: element.idSuper!, idEx: widget.superUser.idSuper!)
+            .then((ListMessages) {
+          setState(() {});
+          msg.addAll(ListMessages);
+          msg.sort((a, b) => a.compareTo(b));
+          recup.update(element.idSuper!, (value) => List.from(msg.reversed));
+        });
+      });
+
+      setState(() {
+        IdExAnMessages = recup;
+        log(recup.toString());
+
+        superUsers = Su;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    try {
+      remplirUsersEtMessages();
+    } catch (e) {
+      log(e.toString());
+    }
+    Timer(
+      Duration(seconds: 15),
+      () {
+        if (superUsers.length == 0) {
+          setState(() {
+            superUsers.length = 0;
+            NoMessage = true;
+          });
+        }
+      },
+    );
+    // MessageController.getMessage(idEx: "14", idDes: "16");
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double h = Media.height(context);
     double w = Media.width(context);
+    log(IdExAnMessages.toString());
     return Scaffold(
         backgroundColor: Color(0xFFEEEFF0),
         appBar: PreferredSize(
@@ -36,7 +109,6 @@ class _MessagerieState extends State<Messagerie> {
           width: w,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 height: h * 0.1,
@@ -95,180 +167,83 @@ class _MessagerieState extends State<Messagerie> {
               ),
               SizedBox(height: 10),
               Expanded(
-                child: ListView(
-                  children: [
-                    ListTile(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Message(),)),
-                      leading: Stack(
+                child: NoMessage
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
+                          Lottie.asset(
+                            "assets/noMessage.json",
+                            animate: true,
+                            fit: BoxFit.cover,
+                            reverse: true,
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
+                          Text(
+                            "Vous n'avez aucun message pour l'instant\nVeuillez envoyer une demande de conversation à la rechecher pour commencer une discusion",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.nunito(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
                         ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
+                      )
+                    : IdExAnMessages.isEmpty
+                        ? Center(
+                            child: Center(
+                              child: Container(
+                                width: w * .3,
+                                child: Lottie.asset("assets/Load.json"),
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: superUsers.length,
+                            itemBuilder: (context, index) {
+                              log(index.toString());
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          superUsers[index].imagePath),
+                                      radius: 25,
+                                      backgroundColor: Colors.grey,
+                                    ),
+                                    title: Text(
+                                      "${superUsers[index].prenom} ${superUsers[index].nom}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      "${IdExAnMessages["14"]!.last.text}",
+                                      // "${IdExAnMessages[superUsers[index].idSuper]!.last}",
+                                      // "${superUsers[index].idSuper}",
+                                      maxLines: 1,
+                                    ),
+                                    trailing: Text(
+                                      "${IdExAnMessages[superUsers[index].idSuper]!.last.dateTime.toString().split(" ").last.split(".").first.split(":").first}:${IdExAnMessages[superUsers[index].idSuper]!.last.dateTime.toString().split(" ").last.split(".").first.split(":")[1]}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => Message(
+                                          SuperUserDes: widget.superUser,
+                                          SuperUserEx: superUsers[index],
+                                          messages: IdExAnMessages[
+                                              superUsers[index].idSuper]!,
+                                        ),
+                                      ));
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                    ListTile(
-                      leading: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage("img/profil.png"),
-                            radius: 30,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 5,
-                            child: StateCircle(true),
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        "Moïse NDJADI",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text("Boni yo?"),
-                      trailing: Text("12:34"),
-                    ),
-                  ],
-                ),
-              )
+              ),
             ],
           ),
         ),

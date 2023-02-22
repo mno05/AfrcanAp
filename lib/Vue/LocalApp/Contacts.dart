@@ -1,14 +1,18 @@
 import 'dart:developer';
 
 import 'package:african_ap/Controllers/ContactsController.dart';
+import 'package:african_ap/Controllers/MessageController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Models/Message.dart';
 import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:toast/toast.dart';
 
 class Contacts extends StatefulWidget {
   final SuperUser superUser;
@@ -98,6 +102,7 @@ class _ContactsState extends State<Contacts> {
 
   @override
   Widget build(BuildContext context) {
+    ToastContext().init(context);
     double h = Media.height(context);
     double w = Media.width(context);
     remplirUsers;
@@ -130,13 +135,14 @@ class _ContactsState extends State<Contacts> {
       ),
       body: superUsers.length == 0
           ? Center(
-              child: CircularProgressIndicator(
-              color: AppData.BasicColor,
-            ))
+              child: Container(
+                width: w * .3,
+                child: Lottie.asset("assets/Load.json"),
+              ),
+            )
           : ListView.builder(
               itemCount: superUsers.length,
               itemBuilder: (context, index) {
-                log(index.toString());
                 return Column(children: [
                   ListTile(
                     leading: CircleAvatar(
@@ -160,13 +166,24 @@ class _ContactsState extends State<Contacts> {
                     ),
                     onTap: () {
                       BasicsWidgets.YesOrNoDialogue(
-                        "Envoyer une demande de discussion à ${superUsers[index].prenom} ${superUsers[index].nom} ?",
-                        context,
+                        msg:
+                            "Envoyer une demande de discussion à ${superUsers[index].prenom} ${superUsers[index].nom} ?",
+                        context: context,
                         Titre: "Demande de Discussion",
                         YesText: "Oui",
                         NoText: "Non",
                         NonPressed: () => Navigator.pop(context),
-                        YesPressed: () {},
+                        YesPressed: () {
+                          MessageController.Envoyer(
+                              context,
+                              Messages(
+                                  idMessage: "",
+                                  idEx: widget.superUser.idSuper!,
+                                  idDes: superUsers[index].idSuper!,
+                                  text:
+                                      "Le membre ${widget.superUser.prenom} ${widget.superUser.nom} souhaite vous contacter.\nRépondez lui pour continuer",
+                                  dateTime: DateTime.now()));
+                        },
                       );
                     },
                   ),

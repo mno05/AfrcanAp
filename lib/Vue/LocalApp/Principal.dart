@@ -76,7 +76,7 @@ class _PrincipalState extends State<Principal> {
           ActionContainer(
             Icons.message,
             tap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Message(),));
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => Message(),));
             },
           ),
           ActionContainer(

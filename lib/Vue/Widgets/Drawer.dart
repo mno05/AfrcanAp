@@ -33,19 +33,20 @@ class DrawerC extends StatelessWidget {
         backgroundColor: Colors.white70,
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             // mainAxisAlignment: MainAxisAlignment.center,
 
             children: [
               Container(
-                padding: EdgeInsets.only(top: h * 0.07),
-                height: h * 0.32,
+                padding: EdgeInsets.only(top: h * 0.04),
+                height: h * 0.28,
                 width: w,
                 // color: Colors.black,
                 child: Center(
                   child: Column(
                     children: [
                       CircleAvatar(
+                        backgroundColor: Colors.grey,
                         backgroundImage: NetworkImage(pathImage),
                         radius: h * 0.07,
                       ),

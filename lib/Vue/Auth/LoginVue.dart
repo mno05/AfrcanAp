@@ -38,117 +38,123 @@ class _LoginVueState extends State<LoginVue> {
     ToastContext().init(context);
     return Scaffold(
       backgroundColor: Color(0xffEB7D30),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, top: 25, right: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                CupertinoIcons.arrowshape_turn_up_left,
-                size: 35,
-                color: Colors.white,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 45,
-                    child: Image.asset("img/logo.png"),
-                  ),
-                  SizedBox(height: Media.height(context) * 0.03),
-                  Text(
-                    "Navigation flow",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: Media.height(context) * 0.03),
-                  Container(
-                    height: Media.height(context) * 0.6,
-                    width: Media.width(context),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(25),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20.0, top: 25, right: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 45,
+                      child: Image.asset("img/logo.png"),
                     ),
-                    child: Form(
-                      key: _key,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LoginTf(
-                            Tcontroller: emailTelephone,
-                            hintText: "Email/Téléphone",
-                            err: "Veuilez entrer un email ou un numéro svp",
-                          ),
-                          SizedBox(
-                            height: Media.height(context) * 0.02,
-                          ),
-                          LoginTf(
-                            Tcontroller: passW,
-                            hintText: "Mot de passe",
-                            err: "Vous devez entrer un mot de passe",
-                            isPassW: true,
-                          ),
-                          SizedBox(height: Media.height(context) * 0.03),
-                          Container(
-                            
-                            padding: EdgeInsets.all(2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                IconButton(onPressed: (){
-                                  SignWith.google();
-                                }, icon: Image.asset('img/google_logo.webp'),iconSize: 50,),
-                                IconButton(onPressed: (){}, icon: Icon(Icons.facebook,color: Colors.blue),iconSize: 50),
-                                IconButton(onPressed: (){}, icon: Image.asset('img/linkedin.png'),iconSize: 50,),
-                              ],
+                    SizedBox(height: Media.height(context) * 0.03),
+                    SizedBox(height: Media.height(context) * 0.03),
+                    Container(
+                      height: Media.height(context) * 0.6,
+                      width: Media.width(context),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Form(
+                        key: _key,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            LoginTf(
+                              Tcontroller: emailTelephone,
+                              hintText: "Email/Téléphone",
+                              err: "Veuilez entrer un email ou un numéro svp",
                             ),
-                          ),
-                          SizedBox(height: Media.height(context) * 0.03),
-
-                          ButtonCusm(
-                            text: "Connexion",
-                            onPressed: () {
-                              if (_key.currentState!.validate()) {
-                                LoginController.UserLogin(
-                                  context,
-                                  User(
-                                    prenom: "",
-                                    nom: "",
-                                    telephone: "",
-                                    email: emailTelephone.text,
-                                    passw: passW.text,
-                                    imageName: "",
-                                    imageData: File(""),
+                            SizedBox(
+                              height: Media.height(context) * 0.02,
+                            ),
+                            LoginTf(
+                              Tcontroller: passW,
+                              hintText: "Mot de passe",
+                              err: "Vous devez entrer un mot de passe",
+                              isPassW: true,
+                            ),
+                            SizedBox(height: Media.height(context) * 0.03),
+                            Container(
+                              padding: EdgeInsets.all(2),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      SignWith.google();
+                                    },
+                                    icon: Image.asset('img/google_logo.webp'),
+                                    iconSize: 55,
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.white),
+                                    ),
                                   ),
-                                );
-                              }
-                            },
-                          ),
-                          SizedBox(height: Media.height(context) * 0.02),
-                          ButtonCusm(
-                            text: "Inscrription",
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Inscription(),
-                                  ));
-                            },
-                          ),
-                        ],
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(Icons.facebook,
+                                          color: Colors.blue),
+                                      iconSize: 50),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Image.asset('img/linkedin.png'),
+                                    iconSize: 47,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: Media.height(context) * 0.03),
+                            ButtonCusm(
+                              text: "Connexion",
+                              onPressed: () {
+                                if (_key.currentState!.validate()) {
+                                  LoginController.UserLogin(
+                                    context,
+                                    User(
+                                      prenom: "",
+                                      nom: "",
+                                      telephone: "",
+                                      email: emailTelephone.text,
+                                      passw: passW.text,
+                                      imageName: "",
+                                      imageData: File(""),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            SizedBox(height: Media.height(context) * 0.02),
+                            ButtonCusm(
+                              text: "Inscrription",
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Inscription(),
+                                    ));
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

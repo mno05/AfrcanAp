@@ -7,6 +7,7 @@ import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Contacts.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/LocalApp/Messagerie.dart';
@@ -57,15 +58,25 @@ class BottomNavigation extends StatelessWidget {
                   onPressed: () {
                     SaveUser.getUser().then((value) {
                       if (value.isLambda) {
-                        BasicsWidgets.alert(
-                            "Vous n'etes pas éligible aux messages, veuillez adhérer la plateforme",
-                            context);
+                        BasicsWidgets.YesOrNoDialogue(
+                          context: context,
+                          msg: "Vous n'étes pas éligible aux messages, veuillez adhérer la plateforme.",
+                          YesText: "J'adhére",
+                          NoText: "Non merci",
+                          NonPressed: (){
+                            Navigator.pop(context);
+                          },
+                          YesPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => Adhesion(),)),
+                        );
                       } else {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Messagerie(),
-                            ));
+                        SaveSuperUser.getSuperUser().then((value) {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Messagerie(superUser: value,),
+                              ));
+                        });
                       }
                     });
                   },
@@ -133,14 +144,15 @@ class BottomNavigation extends StatelessWidget {
                     SaveUser.getUser().then((value) {
                       if (value.isLambda) {
                         BasicsWidgets.alert(
-                            "Vous ne pouvez pas Contacter les membres, veuillez adhérer la plateforme",
+                            "Vous ne pouvez pas rechercher les membres, veuillez adhérer la plateforme",
                             context);
                       } else {
                         SaveSuperUser.getSuperUser().then((value) {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Contacts(superUser: value),
+                                builder: (context) =>
+                                    Contacts(superUser: value),
                               ));
                         });
                       }

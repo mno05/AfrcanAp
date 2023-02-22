@@ -1,5 +1,6 @@
 import 'package:african_ap/Data/AppData.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class BasicsWidgets {
   static alert(String msg, BuildContext context, {Titre = "Message"}) {
@@ -20,9 +21,27 @@ class BasicsWidgets {
         }));
   }
 
-  static YesOrNoDialogue(
-    String msg,
-    BuildContext context, {
+  static Done(BuildContext context) {
+    // Navigator.pop(context);
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            content: Material(
+              child: Container(
+                height: 50,
+                width: 50,
+                child: Lottie.asset("cons.json"),
+              ),
+            ),
+          );
+        }));
+  }
+
+  static YesOrNoDialogue({
+    required BuildContext context,
+    required String msg,
     Titre = "Message",
     void Function()? YesPressed,
     NonPressed,
