@@ -14,6 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
@@ -73,7 +74,7 @@ class _LoginVueState extends State<LoginVue> {
                             LoginTf(
                               Tcontroller: emailTelephone,
                               hintText: "Email/Téléphone",
-                              err: "Veuilez entrer un email ou un numéro svp",
+                              err: "Veuillez entrer un e-mail ou téléphone SVP",
                             ),
                             SizedBox(
                               height: Media.height(context) * 0.02,
@@ -81,7 +82,7 @@ class _LoginVueState extends State<LoginVue> {
                             LoginTf(
                               Tcontroller: passW,
                               hintText: "Mot de passe",
-                              err: "Vous devez entrer un mot de passe",
+                              err: "Veuillez mettre un mot de passe",
                               isPassW: true,
                             ),
                             SizedBox(height: Media.height(context) * 0.03),
@@ -95,7 +96,9 @@ class _LoginVueState extends State<LoginVue> {
                                     onPressed: () {
                                       SignWith.google();
                                     },
-                                    icon: Image.asset('img/google_logo.webp'),
+                                    // icon: Image.asset('img/google_logo.webp'),
+                                    icon: Icon(FontAwesomeIcons.google,size: 40,),
+
                                     iconSize: 55,
                                     style: ButtonStyle(
                                       backgroundColor:
@@ -105,12 +108,15 @@ class _LoginVueState extends State<LoginVue> {
                                   ),
                                   IconButton(
                                       onPressed: () {},
-                                      icon: Icon(Icons.facebook,
-                                          color: Colors.blue),
+                                    icon: Icon(FontAwesomeIcons.facebook),
+
+                                      // icon: Icon(Icons.facebook,
+                                      //     color: Colors.blue),
                                       iconSize: 50),
                                   IconButton(
                                     onPressed: () {},
-                                    icon: Image.asset('img/linkedin.png'),
+                                    // icon: Image.asset('img/linkedin.png'),
+                                    icon: Icon(FontAwesomeIcons.linkedinIn),
                                     iconSize: 47,
                                   ),
                                 ],
@@ -138,7 +144,7 @@ class _LoginVueState extends State<LoginVue> {
                             ),
                             SizedBox(height: Media.height(context) * 0.02),
                             ButtonCusm(
-                              text: "Inscrription",
+                              text: "Inscription",
                               onPressed: () {
                                 Navigator.pushReplacement(
                                     context,

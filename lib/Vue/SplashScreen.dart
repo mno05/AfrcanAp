@@ -32,6 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           } else {
             Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => Principal(
+                // superUser: value,
                   user: User(
                       prenom: value.prenom,
                       nom: value.nom,
@@ -55,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
-        duration: 3000,
+        duration: 3500,
         splash: Image.asset("img/logo.png"),
         splashIconSize: MediaQuery.of(context).size.height * 0.15,
         nextScreen: SplashScreen(),

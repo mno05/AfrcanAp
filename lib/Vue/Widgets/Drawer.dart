@@ -4,9 +4,16 @@ import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Data/SaveSuperUser.dart';
 import 'package:african_ap/Data/SaveUser.dart';
 import 'package:african_ap/Models/SuperUser.dart';
+import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
+import 'package:african_ap/Vue/LocalApp/Apropos.dart';
+import 'package:african_ap/Vue/LocalApp/ContactUs.dart';
+import 'package:african_ap/Vue/LocalApp/Contacts.dart';
+import 'package:african_ap/Vue/LocalApp/Invitation.dart';
 import 'package:african_ap/Vue/LocalApp/Parametre.dart';
+import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:flutter/material.dart';
 
@@ -73,7 +80,7 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  print("Accueil");
+                  Navigator.pop(context);
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,
@@ -96,7 +103,11 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  print("A propos");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Apropos(),
+                      ));
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,
@@ -119,7 +130,11 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  print("Nous contactez");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ContactUs(),
+                      ));
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,
@@ -142,7 +157,9 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  print("Invitation");
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => Invitation(),
+                  ));
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,
@@ -165,7 +182,31 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  print("Trouvez un membre");
+                  SaveUser.getUser().then((value) {
+                    if (value.isLambda) {
+                      BasicsWidgets.YesOrNoDialogue(
+                          context: context,
+                          msg:
+                              "Vous ne pouvez pas rechercher les membres, veuillez adhérer la plateforme",
+                          YesText: "J'adhére",
+                          NoText: "Non merci",
+                          NonPressed: () {
+                            Navigator.pop(context);
+                          },
+                          YesPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => Adhesion(),
+                              )));
+                    } else {
+                      SaveSuperUser.getSuperUser().then((value) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Contacts(superUser: value),
+                            ));
+                      });
+                    }
+                  });
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,

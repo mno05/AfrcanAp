@@ -15,6 +15,7 @@ import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomNavigation extends StatelessWidget {
   final bool isMessage;
@@ -42,7 +43,9 @@ class BottomNavigation extends StatelessWidget {
                     IconButton(
                       onPressed: () {},
                       icon: Icon(
-                        CupertinoIcons.ellipses_bubble_fill,
+                        // CupertinoIcons.ellipses_bubble_fill,
+                        FontAwesomeIcons.solidMessage,
+
                         size: 35,
                         color: Colors.white,
                       ),
@@ -60,28 +63,34 @@ class BottomNavigation extends StatelessWidget {
                       if (value.isLambda) {
                         BasicsWidgets.YesOrNoDialogue(
                           context: context,
-                          msg: "Vous n'étes pas éligible aux messages, veuillez adhérer la plateforme.",
-                          YesText: "J'adhére",
+                          msg:
+                              "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                          YesText: "J'adhère",
                           NoText: "Non merci",
-                          NonPressed: (){
+                          NonPressed: () {
                             Navigator.pop(context);
                           },
-                          YesPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => Adhesion(),)),
+                          YesPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => Adhesion(),
+                          )),
                         );
                       } else {
                         SaveSuperUser.getSuperUser().then((value) {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    Messagerie(superUser: value,),
+                                builder: (context) => Messagerie(
+                                  superUser: value,
+                                ),
                               ));
                         });
                       }
                     });
                   },
                   icon: Icon(
-                    CupertinoIcons.ellipses_bubble_fill,
+                    // CupertinoIcons.ellipses_bubble_fill,
+                    FontAwesomeIcons.solidMessage,
                     size: 35,
                     color: Colors.white,
                   ),
@@ -93,7 +102,9 @@ class BottomNavigation extends StatelessWidget {
                     IconButton(
                       onPressed: () {},
                       icon: Icon(
-                        Icons.home_sharp,
+                        // Icons.home_sharp,
+                        FontAwesomeIcons.homeLgAlt,
+
                         size: 35,
                         color: Colors.white,
                       ),
@@ -115,7 +126,8 @@ class BottomNavigation extends StatelessWidget {
                         ));
                   },
                   icon: Icon(
-                    Icons.home_sharp,
+                    // Icons.home_sharp,
+                    FontAwesomeIcons.homeLgAlt,
                     size: 35,
                     color: Colors.white,
                   ),
@@ -127,7 +139,8 @@ class BottomNavigation extends StatelessWidget {
                     IconButton(
                       onPressed: () {},
                       icon: Icon(
-                        CupertinoIcons.search,
+                        // CupertinoIcons.search,
+                        FontAwesomeIcons.search,
                         size: 35,
                         color: Colors.white,
                       ),
@@ -143,9 +156,19 @@ class BottomNavigation extends StatelessWidget {
                   onPressed: () {
                     SaveUser.getUser().then((value) {
                       if (value.isLambda) {
-                        BasicsWidgets.alert(
-                            "Vous ne pouvez pas rechercher les membres, veuillez adhérer la plateforme",
-                            context);
+                        BasicsWidgets.YesOrNoDialogue(
+                            context: context,
+                            msg:
+                                "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                            YesText: "J'adhère",
+                            NoText: "Non merci",
+                            NonPressed: () {
+                              Navigator.pop(context);
+                            },
+                            YesPressed: () =>
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => Adhesion(),
+                                )));
                       } else {
                         SaveSuperUser.getSuperUser().then((value) {
                           Navigator.pushReplacement(
@@ -159,7 +182,9 @@ class BottomNavigation extends StatelessWidget {
                     });
                   },
                   icon: Icon(
-                    CupertinoIcons.search,
+                    // CupertinoIcons.search,
+                    FontAwesomeIcons.search,
+
                     size: 35,
                     color: Colors.white,
                   ),

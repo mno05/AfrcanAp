@@ -4,29 +4,33 @@ import 'dart:io';
 import 'package:african_ap/Controllers/PostController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/Post.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
 class PostVue extends StatefulWidget {
-  final User user;
-  const PostVue({super.key, required this.user});
+  final SuperUser superUser;
+  const PostVue({super.key, required this.superUser});
 
   @override
   State<PostVue> createState() => _PostVueState();
 }
 
 class _PostVueState extends State<PostVue> {
-  String hintPortee = "Choisissez la portée du post";
   bool PhotoIsSelectionned = false;
   bool VideoIsSelectionned = false;
+
   File img = File("");
-  String imgName = "Nul";
+  String imgName = "nul";
   XFile? imageFile;
   TextEditingController Legende = TextEditingController();
+  String Portee = "Tout le monde";
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +38,19 @@ class _PostVueState extends State<PostVue> {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: AppData.BasicColor,
+      // backgroundColor: AppData.BasicColor,
       appBar: AppBar(
+        leading: BackButton(
+          color: Colors.black87,
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text("Créer un post"),
+        title: Text(
+          "Créer un post",
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -46,7 +58,7 @@ class _PostVueState extends State<PostVue> {
             Container(
               height: 1,
               width: w,
-              color: Colors.white38,
+              color: Colors.black12,
             ),
             Container(
               padding: EdgeInsets.all(8),
@@ -57,45 +69,191 @@ class _PostVueState extends State<PostVue> {
                     ListTile(
                       leading: CircleAvatar(
                         radius: 25,
-                        backgroundImage: NetworkImage(widget.user.imageName),
+                        backgroundImage:
+                            NetworkImage(widget.superUser.imagePath),
                       ),
                       title: Text(
-                        "${widget.user.prenom} ${widget.user.nom}",
-                        style: TextStyle(
+                        "${widget.superUser.prenom} ${widget.superUser.nom}",
+                        style: GoogleFonts.nunito(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
                       ),
                       dense: true,
-                      minLeadingWidth: 4,
+                      // minLeadingWidth: 0,
                       subtitle: Container(
-                        padding: EdgeInsets.only(right: 30),
+                        // padding: EdgeInsets.only(right: 30),
                         // color: Colors.red,
                         height: 50,
                         width: 50,
-                        child: DropdownButton(
-                          isDense: true,
-                          isExpanded: true,
-                          hint: Text(hintPortee),
-                          items: [
-                            DropdownMenuItem(
-                                child: Text("Grand public"),
-                                value: "Grand public"),
-                            DropdownMenuItem(
-                                child: Text("Membre Adhérent uniquement"),
-                                value: "Membre Adhérent uniquement"),
-                            DropdownMenuItem(
-                                child: Text("Membre effectif uniquement"),
-                                value: "Membre effectif uniquement"),
-                            DropdownMenuItem(
-                                child: Text("Membre d'honneur uniquement"),
-                                value: "Membre d'honneur uniquement"),
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              bottom: 5,
+                              child: Container(
+                                // width: 150,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  // color: Colors.amber,
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                    width: .4,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                child: InkWell(
+                                  onTap: () => showModalBottomSheet(
+                                    backgroundColor: Colors.transparent,
+                                    context: context,
+                                    builder: (context) => Container(
+                                      height: 300,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(50),
+                                            topRight: Radius.circular(50)),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Stack(
+                                          children: [
+                                            Positioned(
+                                              right: w / 3,
+                                              top: 0,
+                                              left: w / 3,
+                                              child: Container(
+                                                width: 100,
+                                                height: 5,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            Center(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(height: 15),
+                                                  Text(
+                                                    "Qui peut voir ce post?",
+                                                    style: GoogleFonts.nunito(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+
+                                                      setState(() {
+                                                        Portee =
+                                                            "Tout le monde";
+                                                      });
+                                                    },
+                                                    child: Column(
+                                                      children: [
+                                                        Text(
+                                                          "Tout le monde",
+                                                          style: GoogleFonts
+                                                              .nunito(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 17,
+                                                            color: AppData
+                                                                .BasicColor,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "Le poste sera visible pour tous les membres et non membres de la plateforme ",
+                                                          style: GoogleFonts
+                                                              .nunito(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 14,
+                                                            color:
+                                                                Colors.black,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      setState(() {
+                                                        Portee = widget
+                                                            .superUser.type;
+                                                      });
+                                                    },
+                                                    child: Column(
+                                                      children: [
+                                                        Text(
+                                                          "Le membre ${widget.superUser.type} seulement",
+                                                          style: GoogleFonts
+                                                              .nunito(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 17,
+                                                            color: AppData
+                                                                .BasicColor,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type}s seulement les autres ne veront pas celà",
+                                                            style: GoogleFonts
+                                                                .nunito(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 14,
+                                                              color: Colors
+                                                                  .black,
+                                                            ))
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Portee == "Tout le monde"
+                                              ? Icon(
+                                                  FontAwesomeIcons.earthAfrica,
+                                                  size: 15,
+                                                  color: Colors.black87)
+                                              : Icon(
+                                                  FontAwesomeIcons.peopleGroup,
+                                                  size: 15,
+                                                  color: Colors.black87),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            Portee,
+                                            style: GoogleFonts.nunito(
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Icon(Icons.arrow_drop_down,
+                                              color: Colors.black)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
                           ],
-                          onChanged: (value) {
-                            setState(() {
-                              hintPortee = value.toString();
-                            });
-                          },
                         ),
                       ),
                     ),
@@ -103,14 +261,14 @@ class _PostVueState extends State<PostVue> {
                     Container(
                       padding: EdgeInsets.all(8),
                       width: w,
-                      height: h / 5,
+                      height: h / 4,
                       decoration: BoxDecoration(
-                        color: Colors.black54,
+                        // color: Colors.black54,
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                       child: TextField(
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: Colors.black87,
                           fontWeight: FontWeight.bold,
                         ),
                         keyboardType: TextInputType.multiline,
@@ -119,7 +277,7 @@ class _PostVueState extends State<PostVue> {
                         decoration: InputDecoration(
                           hintText: "Que voulez-vous poster?",
                           hintStyle: TextStyle(
-                            color: Colors.white70,
+                            color: Colors.black87,
                             fontWeight: FontWeight.bold,
                           ),
                           border: InputBorder.none,
@@ -137,7 +295,7 @@ class _PostVueState extends State<PostVue> {
                                     height: h * 0.16,
                                     width: 100,
                                     decoration: BoxDecoration(
-                                      color: Colors.black,
+                                      color: Colors.black87,
                                       borderRadius: BorderRadius.circular(20),
                                       image: DecorationImage(
                                           image:
@@ -164,12 +322,12 @@ class _PostVueState extends State<PostVue> {
                                 leading: Icon(
                                   Icons.photo,
                                   size: 30,
-                                  color: Colors.white70,
+                                  color: Colors.black87,
                                 ),
                                 title: Text(
                                   "Photo",
                                   style: TextStyle(
-                                    color: Colors.white70,
+                                    color: Colors.black87,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -211,12 +369,12 @@ class _PostVueState extends State<PostVue> {
                                 leading: Icon(
                                   Icons.video_camera_back,
                                   size: 30,
-                                  color: Colors.white70,
+                                  color: Colors.black87,
                                 ),
                                 title: Text(
                                   "Vidéo",
                                   style: TextStyle(
-                                    color: Colors.white70,
+                                    color: Colors.black87,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -233,28 +391,33 @@ class _PostVueState extends State<PostVue> {
                                 },
                               ),
                     SizedBox(height: h * 0.07),
-                    ButtonCusm(
-                      text: "Publier",
-                      onPressed: () {
-                        if (hintPortee == "Choisissez la portée du post") {
-                          Toast.show("Veuillez séléctionner la portée du post");
-                        } else {
-                          if (Legende.text.isEmpty || imgName.isEmpty) {
-                            Toast.show("Vous n'avez rien entrer");
-                          } else {
-                            log(imgName);
+                    ElevatedButton(
+                        child: Text("Publier"),
+                        style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(AppData.BasicColor)),
+                        onPressed: () {
+                          if (Legende.text.isNotEmpty || imgName != "nul") {
+                            log((imgName).toString());
                             PostController.Publier(
-                                context,
-                                Post(
-                                    idUser: widget.user.Id,
-                                    Legende: Legende.text,
-                                    Portee: hintPortee,
-                                    PathContenu: imgName,
-                                    fileData: img));
+                              context,
+                              Post(
+                                idUser: widget.superUser.idSuper!,
+                                Legende: Legende.text,
+                                Portee:
+                                    Portee == "Tout le monde" ? "Tout" : Portee,
+                                type: PhotoIsSelectionned
+                                    ? "Photo"
+                                    : VideoIsSelectionned
+                                        ? "Video"
+                                        : "Text",
+                                PathContenu: imgName,
+                                fileData: img,
+                              ),
+                            );
+                          } else {
+                            Toast.show("Vous n'avez rien entrer");
+                            log("Here");
                           }
-                        }
-                      },
-                    )
+                        })
                   ],
                 ),
               ),

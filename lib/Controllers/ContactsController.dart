@@ -107,8 +107,6 @@ class ContactsController {
     var data = jsonDecode(rs);
     List<dynamic> valuues = data;
     List<SuperUser> superUsers = [];
-          log("Total : ${data.length}");
-
     for (int i = 0; i < valuues.length; i++) {
       superUsers.add(SuperUser(
           idSuper: data[i]["idSuper"],

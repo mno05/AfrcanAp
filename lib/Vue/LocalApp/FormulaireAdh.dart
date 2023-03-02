@@ -10,6 +10,7 @@ import 'package:african_ap/Vue/Widgets/InscriptionTextField.dart';
 import 'package:african_ap/Vue/Widgets/LoginTextField.dart';
 import 'package:african_ap/Vue/Widgets/TextFieldC.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:toast/toast.dart';
 
 class FormAdh extends StatefulWidget {
@@ -31,10 +32,21 @@ class _FormAdhState extends State<FormAdh> {
   TextEditingController telephone = TextEditingController();
   TextEditingController adresseMail = TextEditingController();
   TextEditingController fonction = TextEditingController();
-  TextEditingController statutpro = TextEditingController();
   TextEditingController autreStatut = TextEditingController(text: "n");
   TextEditingController domainesExpertise = TextEditingController();
 
+  List<String> itmes = [
+    "Employé(e)",
+    "Indépendant(e)",
+    "Etudiant(e)",
+    "Autre",
+  ];
+
+  DateTime date = DateTime.now();
+  bool selectedDate = false;
+  String datevalue = "";
+
+  String SelectedItem = "Statut professionnel*";
   @override
   void initState() {
     prenom.text = widget.user.prenom;
@@ -66,7 +78,7 @@ class _FormAdhState extends State<FormAdh> {
             child: Column(children: [
               SizedBox(height: h * 0.02),
               Text(
-                "Les champs marqués d'un * sont obligatoires",
+                "Obligatoires *",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -96,16 +108,96 @@ class _FormAdhState extends State<FormAdh> {
               SizedBox(height: h * 0.01),
               TextFildC(hintText: "Adresse mail *", Tcontroller: adresseMail),
               SizedBox(height: h * 0.01),
-              TextFildC(
-                  hintText: "Statut professionnel *", Tcontroller: statutpro),
+              Container(
+                padding: EdgeInsets.only(left: 15),
+                width: w * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: SelectedItem,
+                    hintMaxLines: 1,
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                  items: itmes
+                      .map((e) =>
+                          DropdownMenuItem<String>(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (str) => setState(() => SelectedItem = str!),
+                ),
+              ),
               SizedBox(height: h * 0.01),
-              TextFildC(hintText: "Si autre, lequel", Tcontroller: autreStatut),
-              SizedBox(height: h * 0.01),
+              SelectedItem == "Autre"
+                  ? TextFildC(
+                      hintText: "Si autre, lequel", Tcontroller: autreStatut)
+                  : Container(),
+              SizedBox(height: SelectedItem == "Autre" ? h * 0.01 : 0),
               TextFildC(hintText: "Fonction *", Tcontroller: fonction),
               SizedBox(height: h * 0.01),
               TextFildC(
-                  hintText: "Domaine(s) d'experse(s) *",
+                  hintText: "Domaine d'experse *",
                   Tcontroller: domainesExpertise),
+              SizedBox(height: h * 0.01),
+              InkWell(
+                child: Container(
+                  padding: EdgeInsets.only(left: 15),
+                  width: w * 0.8,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 14.0, bottom: 14.0, left: 0),
+                    child: Text(
+                      selectedDate ? datevalue : "Date d'adhésion*",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: selectedDate ? Colors.black : Colors.black54,
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: () {
+                  showDatePicker(
+                          helpText: "Heure",
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime(2024))
+                      .then((value) {
+                    setState(() {
+                      date = value!;
+                      selectedDate = true;
+                      datevalue = "${date.day}/${date.month}/${date.year}";
+                    });
+                  });
+                },
+              ),
+              SizedBox(height: h * 0.03),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Checkbox(
+                    value: false,
+                    onChanged: (value) {},
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    width: w * .8,
+                    child: Text(
+                      "Je confirme avoir pris connaissance et m’engage à respecter le Règlement d’Ordre Intérieur de l’A.S.B.L African Professionals *",
+                    textAlign: TextAlign.start,
+                    style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: h * 0.02),
               ElevatedButton(
                 onPressed: () {
@@ -133,6 +225,8 @@ class _FormAdhState extends State<FormAdh> {
                   if (prenom.text.isNotEmpty &&
                       nom.text.isNotEmpty &&
                       paysOrgine.text.isNotEmpty &&
+                      SelectedItem != "Statut professionnel*" &&
+                      datevalue.isNotEmpty &&
                       pays.text.isNotEmpty &&
                       telephone.text.isNotEmpty &&
                       adresseMail.text.isNotEmpty &&
@@ -158,7 +252,9 @@ class _FormAdhState extends State<FormAdh> {
                             telephone: telephone.text,
                             adresseMail: adresseMail.text,
                             type: "Adherent",
-                            statutpro: statutpro.text,
+                            statutpro: SelectedItem == "Autre"
+                                ? autreStatut.text
+                                : SelectedItem,
                             autreStatut: aute,
                             fonction: fonction.text,
                             domainesExpertise: domainesExpertise.text,
@@ -182,7 +278,9 @@ class _FormAdhState extends State<FormAdh> {
                                 telephone: telephone.text,
                                 adresseMail: adresseMail.text,
                                 type: "Effectif",
-                                statutpro: statutpro.text,
+                                statutpro: SelectedItem == "Autre"
+                                    ? autreStatut.text
+                                    : SelectedItem,
                                 autreStatut: aute,
                                 fonction: fonction.text,
                                 domainesExpertise: domainesExpertise.text,
@@ -205,7 +303,9 @@ class _FormAdhState extends State<FormAdh> {
                               telephone: telephone.text,
                               adresseMail: adresseMail.text,
                               type: "Honneur",
-                              statutpro: statutpro.text,
+                              statutpro: SelectedItem == "Autre"
+                                  ? autreStatut.text
+                                  : SelectedItem,
                               autreStatut: aute,
                               fonction: fonction.text,
                               domainesExpertise: domainesExpertise.text,

@@ -30,6 +30,11 @@ class _InscriptionState extends State<Inscription> {
 
   //Variables fonction  pour l'imageProfil
 
+  PhoneNumber pn = PhoneNumber(
+    dialCode: "243",
+    isoCode: "243",
+  );
+
   XFile? _imageFile;
   ImagePicker _imagePicker = ImagePicker();
   late String imgdata;
@@ -85,7 +90,7 @@ class _InscriptionState extends State<Inscription> {
                           child: Column(
                             children: [
                               InscriptionTf(
-                                hintText: "Prenom",
+                                hintText: "Prénom",
                                 Tcontroller: prenom,
                                 err: "Veuillez renseigner votre prenom",
                               ),
@@ -95,7 +100,7 @@ class _InscriptionState extends State<Inscription> {
                                 err: "Veuillez renseigner votre nom",
                               ),
                               InscriptionTf(
-                                hintText: "Adresse E-mail",
+                                hintText: "E-mail",
                                 Tcontroller: email,
                                 err: "Veuillez renseigner votre email",
                                 isEmail: true,
@@ -116,15 +121,17 @@ class _InscriptionState extends State<Inscription> {
                                   onInputChanged: (value) {
                                     telephone = value;
                                   },
+                                  
                                   textStyle: TextStyle(
                                     color: Colors.white,
                                   ),
+                                  // initialValue: ,
                                   inputBorder: InputBorder.none,
                                   cursorColor: Colors.white,
                                   formatInput: false,
                                   selectorConfig: SelectorConfig(
                                     selectorType:
-                                        PhoneInputSelectorType.BOTTOM_SHEET,
+                                  PhoneInputSelectorType.BOTTOM_SHEET,
                                   ),
                                   inputDecoration: InputDecoration(
                                     border: InputBorder.none,

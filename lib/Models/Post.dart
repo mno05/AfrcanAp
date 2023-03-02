@@ -7,6 +7,7 @@ class Post {
   String? Legende;
   String? date;
   String? PathContenu;
+  String type;
   File? fileData;
 
   Post({
@@ -15,6 +16,7 @@ class Post {
     required this.Portee,
     this.Legende,
     this.date,
+    required this.type,
     this.PathContenu,
     this.fileData,
   });

@@ -25,7 +25,7 @@ class TextFildC extends StatelessWidget {
         padding: EdgeInsets.only(left: 15),
         width: Media.width(context) * 0.8,
         decoration: BoxDecoration(
-          color: Colors.grey[400],
+          color: Colors.grey[300],
           borderRadius: BorderRadius.circular(10),
         ),
         child: TextFormField(

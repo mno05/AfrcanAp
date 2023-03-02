@@ -79,11 +79,11 @@ class Parametre extends StatelessWidget {
                 leading: Icon(
                   Icons.lock,
                   size: 50,
-                  color: Colors.black45,
+                  color: Colors.black12,
                 ),
                 title: Text(
                   "Confidentialités des données",
-                  style: TextStyle(fontSize: w * 0.045, color: Colors.black54),
+                  style: TextStyle(fontSize: w * 0.045, color: Colors.black12),
                 ),
               ),
             ),
@@ -99,11 +99,11 @@ class Parametre extends StatelessWidget {
                 leading: Icon(
                   Icons.note_alt_outlined,
                   size: 50,
-                  color: Colors.black45,
+                  color: Colors.black12,
                 ),
                 title: Text(
                   "ROI et Charte",
-                  style: TextStyle(fontSize: w * 0.045, color: Colors.black54),
+                  style: TextStyle(fontSize: w * 0.045, color: Colors.black12),
                 ),
               ),
             ),
