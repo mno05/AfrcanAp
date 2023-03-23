@@ -7,9 +7,11 @@ import 'package:african_ap/Data/SaveUser.dart';
 import 'package:african_ap/Models/Message.dart';
 import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
+import 'package:african_ap/Vue/LocalApp/ContactPersonProfil.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
+import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:toast/toast.dart';
@@ -24,6 +26,7 @@ class Contacts extends StatefulWidget {
 
 class _ContactsState extends State<Contacts> {
   List<SuperUser> superUsers = [];
+  List<SuperUser> superUsersT = [];
 
   remplirUsers() async {
     await ContactsController.AllContacts().then((value) {
@@ -36,6 +39,7 @@ class _ContactsState extends State<Contacts> {
       value.remove(isMe);
       setState(() {
         superUsers = value;
+        superUsersT = superUsers;
       });
     });
   }
@@ -66,6 +70,25 @@ class _ContactsState extends State<Contacts> {
           //   BasicsWidgets.Load(context);
           //   setState(() {});
           // },
+
+          onChanged: (value) {
+            superUsers = [];
+            superUsers = superUsersT
+                .where((element) =>
+                    element.nom
+                        .toString()
+                        .toLowerCase()
+                        .contains(value.toLowerCase()) ||
+                    element.prenom.toLowerCase().contains(value.toLowerCase()))
+                .toList();
+            // for (var element in superUsers) {
+            //   if (element.nom.contains(value) ||
+            //       element.prenom.contains(value)) {}
+            // }
+            setState(() {
+              superUsers = superUsers;
+            });
+          },
           onTap: () {
             print("");
           },
@@ -159,32 +182,18 @@ class _ContactsState extends State<Contacts> {
                     ),
                     subtitle: Text("${superUsers[index].domainesExpertise}"),
                     trailing: Text(
-                      "Membre ${superUsers[index].type}",
+                      "Membre ${superUsers[index].type!="Honneur"?superUsers[index].type:"d'"+superUsers[index].type}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     onTap: () {
-                      BasicsWidgets.YesOrNoDialogue(
-                        msg:
-                            "Envoyer une demande de discussion à ${superUsers[index].prenom} ${superUsers[index].nom} ?",
-                        context: context,
-                        Titre: "Demande de Discussion",
-                        YesText: "Oui",
-                        NoText: "Non",
-                        NonPressed: () => Navigator.pop(context),
-                        YesPressed: () {
-                          MessageController.Envoyer(
-                              context,
-                              Messages(
-                                  idMessage: "",
-                                  idEx: widget.superUser.idSuper!,
-                                  idDes: superUsers[index].idSuper!,
-                                  text:
-                                      "Le membre ${widget.superUser.prenom} ${widget.superUser.nom} souhaite vous contacter.\nRépondez lui pour continuer",
-                                  dateTime: DateTime.now()));
-                        },
-                      );
+                      ChangePage.SliderPush(
+                          context: context,
+                          push: ContactPersoView(
+                            superUser: superUsers[index],
+                            idEx: widget.superUser.idSuper,
+                          ));
                     },
                   ),
                 ]);

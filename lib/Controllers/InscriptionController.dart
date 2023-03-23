@@ -21,7 +21,7 @@ class InscriptionController {
       FormData formData;
       // String Url = "https://myap.moglich.net/api/inscription.php/";
       String url =
-          "https://africanap.000webhostapp.com/african_ap/inscription.php/";
+          "https://myap.moglich.net/api/inscription.php/";
       if (user.imageName == "") {
         formData = FormData.fromMap({
           "prenom": user.prenom,

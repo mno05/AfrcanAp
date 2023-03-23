@@ -17,9 +17,10 @@ class LoginController {
   static UserLogin(context, User user) async {
     BasicsWidgets.Load(context);
     final reponse = await http.post(
-        Uri.parse("https://africanap.000webhostapp.com/african_ap/login.php/"),
+        Uri.parse("https://myap.moglich.net/api/login.php/"),
         body: {"email_telephone": user.email, "passw": user.passw});
     if (reponse.statusCode == 200) {
+      log(user.passw);
       try {
         String rs = reponse.body.toString().replaceAll("\n", "");
         var data = jsonDecode(rs);
@@ -27,13 +28,14 @@ class LoginController {
         var recupUser = resultat[2];
         int succes = resultat[1];
         if (succes == 1) {
+          log(resultat.toString());
           User us = User(
             Id: recupUser["idUser"],
             prenom: recupUser["Prenom"],
             nom: recupUser["nom"],
             telephone: recupUser["telephone"],
             email: recupUser["email"],
-            imageName: recupUser["image"],
+            imageName: recupUser["imageName"],
             imageData: File(""),
             passw: recupUser["passW"],
           );
@@ -47,12 +49,12 @@ class LoginController {
           // Toast.show(resultat[0],duration: 4);
           SuperUserController.SuperUserLogin(context,
               email: user.email, mtp: user.passw);
-          log(resultat[0]);
+          log("ICI1"+ resultat[0]);
         }
-        log(succes.toString());
+        log("ICI2"+succes.toString());
       } catch (e) {
         Navigator.pop(context);
-        log(e.toString());
+        log("ICI3"+ e.toString());
         print(e);
       }
     }
@@ -62,7 +64,7 @@ class LoginController {
     BasicsWidgets.Load(context);
     final reponse = await http.post(
         Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/SupprimerUser.php/"),
+            "https://myap.moglich.net/api/SupprimerUser.php/"),
         body: {"email": email});
     if (reponse.statusCode == 200) {
       try {

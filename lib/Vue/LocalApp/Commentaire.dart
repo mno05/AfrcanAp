@@ -22,27 +22,33 @@ class CommentaireVue extends StatefulWidget {
   String UsProfilPath;
   String UsPrenom;
   String UsNom;
+  String Portee;
 
-
+  String idProprioPost;
+  DateTime datePost;
+  String UserType;
   String nbrAime;
   bool isLike;
 
-  CommentaireVue({
-    super.key,
-    required this.UsNom,
-    required this.UsPrenom,
-    required this.UsProfilPath,
-    required this.Prenom,
-    required this.Legende,
-    required this.PathContenu,
-    required this.Nom,
-    required this.PathProfile,
-    required this.TypeContenue,
-    required this.idUser,
-    required this.idPost,
-    required this.nbrAime,
-    required this.isLike,
-  });
+  CommentaireVue(
+      {super.key,
+      required this.UsNom,
+      required this.UsPrenom,
+      required this.UsProfilPath,
+      required this.Prenom,
+      required this.Legende,
+      required this.PathContenu,
+      required this.Nom,
+      required this.PathProfile,
+      required this.UserType,
+      required this.TypeContenue,
+      required this.idUser,
+      required this.idPost,
+      required this.Portee,
+      required this.nbrAime,
+      required this.isLike,
+      required this.idProprioPost,
+      required this.datePost});
 
   @override
   State<CommentaireVue> createState() => _CommentaireVueState();
@@ -63,8 +69,7 @@ class _CommentaireVueState extends State<CommentaireVue> {
   getCommentaires(idPost) async {
     // log("Here");
     final response = await http.post(
-        Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/recupCommentaire.php/"),
+        Uri.parse("https://myap.moglich.net/api/recupCommentaire.php/"),
         body: {
           "idPost": idPost,
         });
@@ -125,7 +130,7 @@ class _CommentaireVueState extends State<CommentaireVue> {
     double w = Media.width(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Commetaire"),
+        title: Text("Commentaire"),
         backgroundColor: AppData.BasicColor,
       ),
       body: Padding(
@@ -142,24 +147,31 @@ class _CommentaireVueState extends State<CommentaireVue> {
                 ExcludeSemantics(
                     // flex: 4,
                     child: Column(
-                      children: [
-                        PostContainer(
-                            Legende: widget.Legende,
-                            PathContenu: widget.PathContenu,
-                            Prenom: widget.Prenom,
-                            Nom: widget.Nom,
-                            PathProfile: widget.PathProfile,
-                            TypeContenue: widget.TypeContenue,
-                            onJaimeTap: () {},
-                            CommentTap: () {},
-                            nbrAime: widget.nbrAime,
-                            isLike: widget.isLike),
-                      ],
-                    )),
+                  children: [
+                    PostContainer(
+                        Portee: widget.Portee,
+                        UserType: widget.UserType,
+                        idPost: widget.idPost,
+                        idProprioPost: widget.idProprioPost,
+                        idUserClick: widget.idUser,
+                        datePost: widget.datePost,
+                        Legende: widget.Legende,
+                        PathContenu: widget.PathContenu,
+                        Prenom: widget.Prenom,
+                        Nom: widget.Nom,
+                        PathProfile: widget.PathProfile,
+                        TypeContenue: widget.TypeContenue,
+                        onJaimeTap: () {},
+                        CommentTap: () {},
+                        nbrAime: widget.nbrAime,
+                        isLike: widget.isLike),
+                  ],
+                )),
                 Expanded(
                   child: ListView.builder(
-                    // scrollDirection: Axis,
-                    // reverse: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      // scrollDirection: Axis,
+                      // reverse: true,
                       itemCount: cmts.length,
                       itemBuilder: (context, index) {
                         return Padding(

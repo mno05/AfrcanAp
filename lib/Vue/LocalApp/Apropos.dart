@@ -23,12 +23,25 @@ class Apropos extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "AfricanAP",
-                style: GoogleFonts.nunito(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "AFRICAN",
+                    style: TextStyle(
+                      fontSize: w*.05,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    " PROFESSIONALS",
+                    style: TextStyle(
+                      fontSize: w*.05,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
               Text(
                 "Version 1.0.0",

@@ -5,12 +5,10 @@ import 'package:african_ap/Models/Commentaire.dart';
 import 'package:dio/dio.dart';
 
 class CommentaireController{
-
    static void Commenter(idUser,idPost,contenu) async {
     try {
       String url =
-          "https://africanap.000webhostapp.com/african_ap/Commenter.php/";
-
+          "https://myap.moglich.net/api/Commenter.php/";
       FormData formData = FormData.fromMap({
           "idPost":idUser,
           "idUser":idPost,

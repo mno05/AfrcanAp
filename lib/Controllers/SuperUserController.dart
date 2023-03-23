@@ -20,9 +20,8 @@ class SuperUserController {
   static void Inscription(context, SuperUser superUser) async {
     BasicsWidgets.Load(context);
     try {
-      // String Url = "https://myap.moglich.net/api/inscription.php/";
       String url =
-          "https://africanap.000webhostapp.com/african_ap/inscriptionSuperUser.php/";
+          "https://myap.moglich.net/api/inscriptionSuperUser.php/";
       FormData formData = FormData.fromMap(superUser.ToMap());
       final Response = await Dio().post(url, data: formData);
       if (Response.statusCode == 200) {
@@ -55,7 +54,7 @@ class SuperUserController {
       {required String email, required String mtp}) async {
     final reponse = await http.post(
         Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/loginSu.php/"),
+            "https://myap.moglich.net/api/loginSu.php/"),
         body: {"email_telephone": email, "passw": mtp});
     if (reponse.statusCode == 200) {
       try {
@@ -76,8 +75,6 @@ class SuperUserController {
             imageData: File(""),
             passw: recupUser["mtp"],
           );
-
-          log("hereeeeeeeeeeeee");
           SuperUser su = SuperUser(
               mtp: recupUser["mtp"],
               idSuper: recupUser["idSuper"],
@@ -97,6 +94,69 @@ class SuperUserController {
               domainesExpertise: recupUser["domainesExpertise"],
               imagePath: recupUser["imagePath"]);
 
+          SaveSuperUser.Sauvegarde(superUser: su);
+          SaveUser.Sauvegarde(user: us);
+          await SaveUser.getUser().then((value) =>
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => Principal(user: value),
+              )));
+        } else {
+          Navigator.pop(context);
+          Toast.show(resultat[0]);
+          log(resultat[0]);
+        }
+        log(succes.toString());
+      } catch (e) {
+        Navigator.pop(context);
+        log(e.toString());
+        print(e);
+      }
+    }
+  }
+  static SuperUserLoginWithoutPw(context,
+      {required String email}) async {
+    final reponse = await http.post(
+        Uri.parse(
+            "https://myap.moglich.net/api/loginSu2.php/"),
+        body: {"email_telephone": email});
+    if (reponse.statusCode == 200) {
+      try {
+        String rs = reponse.body.toString().replaceAll("\n", "");
+        var data = jsonDecode(rs);
+        var resultat = data["data"];
+        var recupUser = resultat[2];
+        int succes = resultat[1];
+        if (succes == 1) {
+          log("Login");
+          User us = User(
+            Id: recupUser["idSuper"],
+            prenom: recupUser["prenom"],
+            nom: recupUser["nom"],
+            telephone: recupUser["telephone"],
+            email: recupUser["adresseMail"],
+            imageName: recupUser["imagePath"],
+            imageData: File(""),
+            passw: recupUser["mtp"],
+          );
+          SuperUser su = SuperUser(
+              mtp: recupUser["mtp"],
+              idSuper: recupUser["idSuper"],
+              prenom: recupUser["prenom"],
+              nom: recupUser["nom"],
+              paysOrgine: recupUser["paysOrgine"],
+              adresse: recupUser["adresse"],
+              codePostal: recupUser["codePostal"],
+              localite: recupUser["localite"],
+              pays: recupUser["pays"],
+              telephone: recupUser["telephone"],
+              adresseMail: recupUser["adresseMail"],
+              type: recupUser["type"],
+              statutpro: recupUser["statutpro"],
+              autreStatut: recupUser["autreStatut"],
+              fonction: recupUser["fonction"],
+              domainesExpertise: recupUser["domainesExpertise"],
+              imagePath: recupUser["imagePath"]);
+          SaveSuperUser.Supprimer();
           SaveSuperUser.Sauvegarde(superUser: su);
           SaveUser.Sauvegarde(user: us);
           await SaveUser.getUser().then((value) =>

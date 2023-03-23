@@ -18,9 +18,11 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
+  bool _isActive = false;
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     Timer(Duration(seconds: 3), () async {
       User user = await SaveUser.getUser();
       if (user.Id.isEmpty) {
@@ -52,9 +54,25 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     super.initState();
   }
+  
+@override
+void dispose(){
+  super.dispose();
+  WidgetsBinding.instance.removeObserver(this);
+}
+
+@override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed){
+      log("Utilsation de l'app");      
+    } else {
+      log("Non Utilsation de l'app");      
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return AnimatedSplashScreen(
         duration: 3500,
         splash: Image.asset("img/logo.png"),

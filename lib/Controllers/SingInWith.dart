@@ -18,7 +18,7 @@ static Future<void> google() async {
     if (googleAuth.accessToken != '') {
       var accessToken = googleAuth.accessToken;
       String your_auth_server_url =
-          'https://africanap.000webhostapp.com/african_ap/google_sign_in.php'; // https endpoint
+          'https://myap.moglich.net/api/google_sign_in.php'; // https endpoint
       var response = await http.post(Uri.parse(your_auth_server_url),
           body: {'access_token': accessToken, 'email': googleUser.email});
 

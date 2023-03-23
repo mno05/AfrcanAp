@@ -15,7 +15,12 @@ class MyApp extends StatelessWidget {
       title: 'African AP',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        // primarySwatch: Colors.grey,
+        inputDecorationTheme: InputDecorationTheme(
+          iconColor: Colors.grey,
+          focusColor: Colors.grey,
+          
+        )
       ),
       // home: Principal(email: "",img: "",nom: "",prenom: "",telephone: ""),
       home: SplashScreen(),

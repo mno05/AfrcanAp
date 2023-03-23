@@ -21,7 +21,7 @@ class MessageController {
     BasicsWidgets.Load(context);
     try {
       String url =
-          "https://africanap.000webhostapp.com/african_ap/MessageEnvoyer.php/";
+          "https://myap.moglich.net/api/MessageEnvoyer.php/";
 
       FormData formData = FormData.fromMap({
         "idEx": message.idEx,
@@ -38,6 +38,7 @@ class MessageController {
         if (succes == 1) {
           ContactsController.Contacter(
               context: context, idDes: message.idDes, idEx: message.idEx);
+        Navigator.pop(context);
         } else {
           Navigator.pop(context);
           Toast.show(resultat[0], duration: 8);
@@ -53,7 +54,7 @@ class MessageController {
   static void EnvoyerC(Messages message) async {
     try {
       String url =
-          "https://africanap.000webhostapp.com/african_ap/MessageEnvoyer.php/";
+          "https://myap.moglich.net/api/MessageEnvoyer.php/";
 
       FormData formData = FormData.fromMap({
         "idEx": message.idEx,
@@ -70,6 +71,8 @@ class MessageController {
         if (succes == 1) {
           log("idDes :${message.idDes} idEx :${message.idEx}");
           ContactsController.ContacterC(idDes: message.idDes, idEx: message.idEx);
+          ContactsController.ContacterC(idDes: message.idEx, idEx: message.idDes);
+
         } else {
           Toast.show(resultat[0], duration: 8);
         }
@@ -84,7 +87,7 @@ class MessageController {
       {required String idEx, required String idDes}) async {
     final response = await http.post(
         Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/Messages.php/"),
+            "https://myap.moglich.net/api/Messages.php/"),
         body: {
           "idDes": idDes,
           "idEx": idEx,

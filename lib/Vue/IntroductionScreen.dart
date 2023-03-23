@@ -1,5 +1,6 @@
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/Widgets/BoutonC.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_slider/source/presentation/pages/pages.dart';
@@ -18,44 +19,72 @@ class IntroductionS extends StatelessWidget {
         IntroductionSliderItem(
           logo: IntroductionContainer(h, w,
               asset: "assets/welcome.json",
+              isTitle: true,
               text:
-                  "AP vous souhaite  la bienvenue dans  la communauté africaine plus visible sur le marché du travail."),
-          backgroundColor: AppData.BasicColor,
+                  "Vous souhaite  la bienvenue dans  la communauté africaine plus visible sur le marché du travail."),
+          backgroundColor: Colors.white,
         ),
         IntroductionSliderItem(
           logo: IntroductionContainer(h, w,
               asset: "assets/cons.json",
               text:
                   "Les professionnels d’origine africaine sont mis en avant et grâce à l’action de la communauté, ils acquièrent un plus gros pouvoir d’action dans le monde de l’entreprise."),
-          backgroundColor: AppData.BasicColor,
+          backgroundColor: Colors.white,
         ),
         IntroductionSliderItem(
           logo: IntroductionContainer(h, w,
+              isTitle: true,
               asset: "assets/african.json",
               text:
-                  "AP a été créé par et pour les professionnels d’origine africaine."),
-          backgroundColor: AppData.BasicColor,
+                  "Créé par et pour les professionnels d’origine africaine."),
+          backgroundColor: Colors.white,
         ),
       ],
       done: Done(
-        child: Icon(Icons.done, color: Colors.white),
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppData.BasicColorNew,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            "Commencez",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          alignment: Alignment.center,
+        ),
         home: LoginVue(),
       ),
       next: Next(
-          child: Icon(
-        Icons.arrow_forward,
-        color: Colors.white,
-      )),
-      back: Back(child: Icon(Icons.arrow_back, color: Colors.white)),
-      dotIndicator: DotIndicator(
-        unselectedColor: Colors.white,
-        selectedColor: Colors.tealAccent,
+        child: Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppData.BasicColorNew,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            "Suivant",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          alignment: Alignment.center,
+        ),
       ),
+      // back: Back(child: Icon(Icons.arrow_back, color: Colors.white)),
+      // dotIndicator: DotIndicator(
+      //   unselectedColor: Colors.white,
+      //   selectedColor: Colors.tealAccent,
+      // ),
     );
   }
 
   Container IntroductionContainer(double h, double w,
-      {String text = "", required String asset}) {
+      {String text = "", isTitle = false, required String asset}) {
     return Container(
       height: h * 0.7,
       width: w * 0.9,
@@ -71,8 +100,20 @@ class IntroductionS extends StatelessWidget {
               children: [
                 Lottie.asset(
                   asset,
-
                 ),
+                isTitle
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "African Professionals",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          ),
+                        ),
+                      )
+                    : Container(),
                 Text(
                   text,
                   textAlign: TextAlign.center,

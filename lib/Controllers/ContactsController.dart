@@ -12,7 +12,7 @@ import 'package:toast/toast.dart';
 class ContactsController {
   static Future<List<SuperUser>> AllContacts() async {
     final response = await http.post(Uri.parse(
-        "https://africanap.000webhostapp.com/african_ap/recupAllContacts.php"));
+        "https://myap.moglich.net/api/recupAllContacts.php"));
     String rs = response.body.toString().replaceAll("\n", "");
     var data = jsonDecode(rs);
     List<dynamic> valuues = data;
@@ -44,7 +44,7 @@ class ContactsController {
   static Contacter({required context, required idDes, required idEx}) async {
     try {
       String url =
-          "https://africanap.000webhostapp.com/african_ap/Contacter.php/";
+          "https://myap.moglich.net/api/Contacter.php/";
 
       FormData formData = FormData.fromMap({
         "idEx": idEx,
@@ -75,7 +75,7 @@ class ContactsController {
   static ContacterC({required idDes, required idEx}) async {
     try {
       String url =
-          "https://africanap.000webhostapp.com/african_ap/Contacter.php/";
+          "https://myap.moglich.net/api/Contacter.php/";
 
       FormData formData = FormData.fromMap({
         "idEx": idEx,
@@ -101,7 +101,7 @@ class ContactsController {
   static Future<List<SuperUser>> ContactMessage(String idDes) async {
     final response = await http.post(
         Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/MessageContact.php"),
+            "https://myap.moglich.net/api/MessageContact.php"),
         body: {"idDes": idDes});
     String rs = response.body.toString().replaceAll("\n", "");
     var data = jsonDecode(rs);

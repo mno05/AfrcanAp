@@ -7,14 +7,18 @@ import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/LocalApp/AccountAccount01.dart';
 import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Apropos.dart';
 import 'package:african_ap/Vue/LocalApp/ContactUs.dart';
 import 'package:african_ap/Vue/LocalApp/Contacts.dart';
 import 'package:african_ap/Vue/LocalApp/Invitation.dart';
+import 'package:african_ap/Vue/LocalApp/MiscChat01.dart';
 import 'package:african_ap/Vue/LocalApp/Parametre.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
+import 'package:african_ap/Vue/LocalApp/ProfileModif.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
+import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:flutter/material.dart';
 
 class DrawerC extends StatelessWidget {
@@ -68,7 +72,17 @@ class DrawerC extends StatelessWidget {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          SaveUser.getUser().then((value) {
+                            if (value.isLambda) {
+                              ChangePage.Push(context: context, push: ProfileModif(user: value));
+                            } else {
+                              SaveSuperUser.getSuperUser().then((value) {
+                                ChangePage.Push(context: context, push: ProfileModif(superUser: value,));
+                              });
+                            }
+                          });
+                        },
                         child: Text(
                           'Voir le profil',
                           style: TextStyle(color: Colors.black54),

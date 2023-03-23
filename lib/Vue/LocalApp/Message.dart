@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'package:african_ap/Tools/DateDifference.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:african_ap/Controllers/MessageController.dart';
@@ -42,55 +44,25 @@ class _MessageState extends State<Message> {
     getAllMessageUsers();
   }
 
-  getAllMessageUsers() async {
-    final response = await http.post(
-        Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/Messages.php/"),
-        body: {
-          "idDes": '${widget.SuperUserDes.idSuper}',
-          "idEx": '${widget.SuperUserEx.idSuper}',
-        });
+  Future<void> getAllMessageUsers() async {
+    final response = await http
+        .post(Uri.parse("https://myap.moglich.net/api/Messages.php/"), body: {
+      "idDes": '${widget.SuperUserDes.idSuper}',
+      "idEx": '${widget.SuperUserEx.idSuper}',
+    });
 
     if (response.statusCode == 200) {
       setState(() {
         dataMessages = json.decode(response.body);
         for (var i = 0; i < dataMessages.length; i++) {
-          String year = dataMessages[i]["date"].toString().split("-").first;
-          String month = dataMessages[i]["date"].toString().split("-")[1];
-          String day = dataMessages[i]["date"]
-              .toString()
-              .split("-")
-              .last
-              .split(" ")
-              .first;
-          String hour = dataMessages[i]["date"]
-              .toString()
-              .split("-")
-              .last
-              .split(" ")
-              .last
-              .split(":")
-              .first;
-          String minute = dataMessages[i]["date"]
-              .toString()
-              .split("-")
-              .last
-              .split(" ")
-              .last
-              .split(":")[1];
-
           msg.add(
             Messages(
               idMessage: dataMessages[i]["idMessage"],
               idEx: dataMessages[i]["idEx"],
               idDes: dataMessages[i]["idDes"],
               text: dataMessages[i]["text"],
-              dateTime: DateTime(
-                int.parse(year),
-                int.parse(month),
-                int.parse(day),
-                int.parse(hour),
-                int.parse(minute),
+              dateTime: DateDifference.DateFromServerToDateTime(
+                dataMessages[i],
               ),
             ),
           );
@@ -100,68 +72,114 @@ class _MessageState extends State<Message> {
       });
     }
 
-    log(' Resultat : ${dataMessages}');
+    // log(' Resultat : ${}');
   }
 
   // bool sendByMe = true;
   @override
   Widget build(BuildContext context) {
-    msg = msg.reversed.toList();
+    Timer(
+      Duration(seconds: 3),
+      () => getAllMessageUsers(),
+    );
+
     double h = Media.height(context);
     double w = Media.width(context);
+    if (!flagAsync) {
+      // msg = msg.reversed.toList();
+    }
     print(dataMessages);
     // log(widget.messages.toString());
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            StateCircle(true),
+            Stack(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(widget.SuperUserEx.imagePath),
+                  radius: 20,
+                  backgroundColor: Colors.grey,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: StateCircle(true),
+                ),
+              ],
+            ),
             SizedBox(width: 8),
             Text("${widget.SuperUserEx.prenom} ${widget.SuperUserEx.nom}"),
           ],
         ),
         backgroundColor: AppData.BasicColor,
       ),
-      // for (int i = 0; i < widget.messages.length; i++)
       body: flagAsync
           ? Center(
               child: CupertinoActivityIndicator(),
             )
-          : Padding(
-              padding: EdgeInsets.only(bottom: h * .1),
-              child: ListView.builder(
-                  reverse: true,
-                  itemCount: msg.length,
-                  itemBuilder: (context, i) {
-                    return Container(
-                      // width: Media.width(context),
-                      margin:
-                          EdgeInsets.only(bottom: i == msg.length ? 100 : 0),
-                      constraints: BoxConstraints(minWidth: 20, maxWidth: 20),
-                      padding: EdgeInsets.only(
-                          left: 14, right: 14, top: 10, bottom: 10),
-                      child: Align(
-                        alignment: ((msg[i].idDes ==
-                                widget.SuperUserDes.idSuper.toString()
-                            ? Alignment.topLeft
-                            : Alignment.topRight)),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: (msg[i].idDes ==
-                                    widget.SuperUserDes.idSuper.toString()
-                                ? Colors.grey.shade200
-                                : Colors.blue[200]),
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            '${msg[i].text}',
-                            style: TextStyle(fontSize: 15),
+          : RefreshIndicator(
+              onRefresh: getAllMessageUsers,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: h * .1),
+                child: ListView.builder(
+                    reverse: false,
+                    itemCount: msg.length,
+                    itemBuilder: (context, i) {
+                      return Container(
+                        // width: Media.width(context),
+                        margin:
+                            EdgeInsets.only(bottom: i == msg.length ? 100 : 0),
+                        constraints: BoxConstraints(minWidth: 20, maxWidth: 20),
+                        padding: EdgeInsets.only(
+                            left: 14, right: 14, top: 10, bottom: 10),
+                        child: Align(
+                          alignment: ((msg[i].idDes ==
+                                  widget.SuperUserDes.idSuper.toString()
+                              ? Alignment.topLeft
+                              : Alignment.topRight)),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: (msg[i].idDes ==
+                                      widget.SuperUserDes.idSuper.toString()
+                                  ? Colors.grey.shade200
+                                  : Colors.blue[200]),
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 0,
+                                      top: 0,
+                                      // bottom: 10,
+                                      right: 30),
+                                  child: Text(
+                                    '${msg[i].text}',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 30,
+                                      // top: 10,
+                                      bottom: 0,
+                                      right: 0),
+                                  child: Text(
+                                    '${DateDifference.time(msg[i].dateTime, DateTime.now())}',
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  }),
+                      );
+                    }),
+              ),
             ),
       bottomSheet: Container(
         padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 10),

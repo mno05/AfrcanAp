@@ -99,7 +99,7 @@ class _CompteState extends State<Compte> {
                       ),
                       child: Center(
                           child: Text(
-                        "Voir le profile",
+                        "Voir le profil",
                         style: TextStyle(color: AppData.BasicColor),
                       )),
                     ),

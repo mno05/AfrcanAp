@@ -6,14 +6,18 @@ import 'package:african_ap/Data/SaveSuperUser.dart';
 import 'package:african_ap/Data/SaveUser.dart';
 import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Tools/DateDifference.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Commentaire.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
+import 'package:african_ap/Vue/LocalApp/Messagerie.dart';
 import 'package:african_ap/Vue/LocalApp/PostVue.dart';
+import 'package:african_ap/Vue/LocalApp/notification1.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
+import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:http/http.dart' as http;
 import 'package:african_ap/Vue/Widgets/Drawer.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
@@ -34,24 +38,37 @@ class Principal extends StatefulWidget {
 }
 
 class _PrincipalState extends State<Principal> {
+
+
+
   var data;
   Map<String, String> nbrAime = {};
   int nbr = 0;
   bool get = false;
-
+  String typeUser = "";
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPosts();
+
+    SaveUser.getUser().then((value) {
+      if (value.isLambda) {
+        typeUser = "Tout";
+      } else {
+        SaveSuperUser.getSuperUser().then((value) {
+          typeUser = value.type;
+        });
+      }
+      getPosts(typeUser);
+    });
     // then((value1) => getNbrAimes(value1).then((value) => nbrAime[value1]=value));
   }
 
   // Future<List<String>>
-  getPosts() async {
+  getPosts(type) async {
     final response = await http.post(
-      Uri.parse(
-          "https://africanap.000webhostapp.com/african_ap/recupPosts.php/"),
+      Uri.parse("https://myap.moglich.net/api/recupPosts.php/"),
+      body: {'portee': type},
     );
     if (response.statusCode == 200) {
       setState(() {
@@ -66,8 +83,7 @@ class _PrincipalState extends State<Principal> {
 
   Future getNbrAimes(idPost) async {
     final response = await http.post(
-        Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/AimesNomber.php/"),
+        Uri.parse("https://myap.moglich.net/api/AimesNomber.php/"),
         body: {
           "IdPost": idPost,
           "IdUser": widget.user.Id,
@@ -78,33 +94,28 @@ class _PrincipalState extends State<Principal> {
   }
 
   Future Aimer(idPost) async {
-    final response = await http.post(
-        Uri.parse("https://africanap.000webhostapp.com/african_ap/Aimer.php/"),
-        body: {
-          "IdPost": idPost,
-          "IdUser": widget.user.Id,
-        });
+    final response = await http
+        .post(Uri.parse("https://myap.moglich.net/api/Aimer.php/"), body: {
+      "IdPost": idPost,
+      "IdUser": widget.user.Id,
+    });
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       if (data["data"][0] == "Aime") {
         DesAimer(idPost);
       }
-      // log(data["data"][0]);
       return data;
     }
   }
 
   Future DesAimer(idPost) async {
-    final response = await http.post(
-        Uri.parse(
-            "https://africanap.000webhostapp.com/african_ap/DesAimer.php/"),
-        body: {
-          "IdPost": idPost,
-          "IdUser": widget.user.Id,
-        });
+    final response = await http
+        .post(Uri.parse("https://myap.moglich.net/api/DesAimer.php/"), body: {
+      "IdPost": idPost,
+      "IdUser": widget.user.Id,
+    });
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
-      log(data["data"][0]);
       return data;
     }
   }
@@ -172,9 +183,20 @@ class _PrincipalState extends State<Principal> {
         });
   }
 
+
+
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    // log(data);
+    getPosts(typeUser);
+
+    // log(data.toString());
     // getNbrAimes("25");
     Aimer("29");
     double h = Media.height(context);
@@ -191,12 +213,42 @@ class _PrincipalState extends State<Principal> {
           ActionContainer(
             Icons.message,
             tap: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => Message(),));
+              SaveUser.getUser().then((value) {
+                if (value.isLambda) {
+                  BasicsWidgets.YesOrNoDialogue(
+                    context: context,
+                    msg:
+                        "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                    YesText: "J'adhère",
+                    NoText: "Non merci",
+                    NonPressed: () {
+                      Navigator.pop(context);
+                    },
+                    YesPressed: () =>
+                        Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Adhesion(),
+                    )),
+                  );
+                } else {
+                  SaveSuperUser.getSuperUser().then((value) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Messagerie(
+                          superUser: value,
+                        ),
+                      ),
+                    );
+                  });
+                }
+              });
             },
           ),
           ActionContainer(
             Icons.notifications,
-            tap: () {},
+            tap: () {
+              ChangePage.Push(context: context, push: Notification1());
+            },
           ),
         ],
       ),
@@ -213,147 +265,201 @@ class _PrincipalState extends State<Principal> {
                   ),
                 ),
               )
-            : Center(
-                child: ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: h * 0.02,
-                                bottom: h * 0.02,
-                                left: w * 0.08),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.grey,
-                                  backgroundImage: NetworkImage(
-                                    widget.user.imageName,
+            : RefreshIndicator(
+                color: AppData.BasicColor,
+                onRefresh: () async {
+                  getPosts(typeUser);
+                },
+                child: Center(
+                  child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: h * 0.02,
+                                  bottom: h * 0.02,
+                                  left: w * 0.08),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage: NetworkImage(
+                                      widget.user.imageName,
+                                    ),
+                                    radius: h * 0.03,
                                   ),
-                                  radius: h * 0.03,
-                                ),
-                                SizedBox(width: 10),
-                                PostTF(),
-                              ],
+                                  SizedBox(width: 10),
+                                  PostTF(),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: w,
-                            child: FutureBuilder<dynamic>(
-                            future: getNbrAimes(data[index]['idPost']),
-                            builder: (context, sn) {
-                              bool isLiked = sn.hasData
-                                  ? sn.data["idUser"][2] == 1
-                                  : false;
-                              return PostContainer(
-                                CommentTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CommentaireVue(
-                                          UsNom: widget.user.nom,
-                                          UsPrenom: widget.user.prenom,
-                                          UsProfilPath: widget.user.imageName,
-                                          idPost: data[index]['idPost'],
-                                          idUser: widget.user.Id,
-                                          isLike: isLiked,
-                                          Legende: data[index]['Legende'],
-                                          nbrAime: (!sn.hasData ||
-                                                  sn.data?["idUser"][1] == null)
-                                              ? "..."
-                                              : sn.data["idUser"][1].toString(),
-                                          Nom: data[index]['nom'],
-                                          Prenom: data[index]['prenom'],
-                                          PathContenu: data[index]
-                                              ['PathContenu'],
-                                          PathProfile: data[index]['imagePath'],
-                                          TypeContenue: data[index]['type'],
-                                        ),
-                                      ));
-                                },
-                                isLike: isLiked,
-                                onJaimeTap: () async {
-                                  Aimer(data[index]['idPost']).then((aime) {
-                                    setState(() {
-                                      isLiked = isLiked;
+                            Container(
+                              width: w,
+                              child: FutureBuilder<dynamic>(
+                                  future: getNbrAimes(data[index]['idPost']),
+                                  builder: (context, sn) {
+                                    bool isLiked = sn.hasData
+                                        ? sn.data["idUser"][2] == 1
+                                        : false;
+                                    return PostContainer(
+                                      UserType:typeUser,
+
+                                      Portee: data[index]['Portee'],
+                                      
+                                      idPost: data[index]['idPost'],
+                                      idProprioPost:data[index]['idSuper'] ,
+                                      idUserClick: widget.user.Id,
+                                      datePost: DateDifference
+                                          .DateFromServerToDateTime(
+                                              data[index]),
+                                      CommentTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CommentaireVue(
+                                      UserType:typeUser,
+
+                                                    Portee: data[index]['Portee'],
+                                                    idProprioPost:data[index]['idSuper'] ,
+                                                datePost: DateDifference
+                                                    .DateFromServerToDateTime(
+                                                        data[index]),
+                                                UsNom: widget.user.nom,
+                                                UsPrenom: widget.user.prenom,
+                                                UsProfilPath:
+                                                    widget.user.imageName,
+                                                idPost: data[index]['idPost'],
+                                                idUser: widget.user.Id,
+                                                isLike: isLiked,
+                                                Legende: data[index]['Legende'],
+                                                nbrAime: (!sn.hasData ||
+                                                        sn.data?["idUser"][1] ==
+                                                            null)
+                                                    ? "..."
+                                                    : sn.data["idUser"][1]
+                                                        .toString(),
+                                                Nom: data[index]['nom'],
+                                                Prenom: data[index]['prenom'],
+                                                PathContenu: data[index]
+                                                    ['PathContenu'],
+                                                PathProfile: data[index]
+                                                    ['imagePath'],
+                                                TypeContenue: data[index]
+                                                    ['type'],
+                                              ),
+                                            ));
+                                      },
+                                      onJaimeTap: () async {
+                                        print('Hello world $isLiked');
+                                        setState(() {
+                                          isLiked = !isLiked;
+                                        });
+
+                                        print('Hello world222 $isLiked');
+
+                                        Aimer(data[index]['idPost'])
+                                            .then((aime) {});
+                                      },
+                                      isLike: isLiked,
+                                      Legende: data[index]['Legende'],
+                                      nbrAime: (!sn.hasData ||
+                                              sn.data?["idUser"][1] == null)
+                                          ? "..."
+                                          : sn.data["idUser"][1].toString(),
+                                      Nom: data[index]['nom'],
+                                      Prenom: data[index]['prenom'],
+                                      PathContenu: data[index]['PathContenu'],
+                                      PathProfile: data[index]['imagePath'],
+                                      TypeContenue: data[index]['type'],
+                                    );
+                                  }),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Container(
+                          width: w,
+                          child: FutureBuilder<dynamic>(
+                              future: getNbrAimes(data[index]['idPost']),
+                              builder: (context, sn) {
+                                bool isLiked = sn.hasData
+                                    ? sn.data["idUser"][2] == 1
+                                    : false;
+                                return PostContainer(
+                                      UserType:typeUser,
+
+                                  Portee: data[index]['Portee'],
+                                  idPost: data[index]['idPost'],
+                                  idProprioPost:data[index]['idSuper'] ,
+                                  idUserClick: widget.user.Id,
+                                  datePost:
+                                      DateDifference.DateFromServerToDateTime(
+                                          data[index]),
+                                  CommentTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CommentaireVue(
+                                      UserType:typeUser,
+
+                                            Portee: data[index]['Portee'],
+                                            
+                                            idProprioPost:data[index]['idSuper'] ,
+                                            datePost: DateDifference
+                                                .DateFromServerToDateTime(
+                                                    data[index]),
+                                            UsNom: widget.user.nom,
+                                            UsPrenom: widget.user.prenom,
+                                            UsProfilPath: widget.user.imageName,
+                                            idPost: data[index]['idPost'],
+                                            idUser: widget.user.Id,
+                                            isLike: isLiked,
+                                            Legende: data[index]['Legende'],
+                                            nbrAime: (!sn.hasData ||
+                                                    sn.data?["idUser"][1] ==
+                                                        null)
+                                                ? "..."
+                                                : sn.data["idUser"][1]
+                                                    .toString(),
+                                            Nom: data[index]['nom'],
+                                            Prenom: data[index]['prenom'],
+                                            PathContenu: data[index]
+                                                ['PathContenu'],
+                                            PathProfile: data[index]
+                                                ['imagePath'],
+                                            TypeContenue: data[index]['type'],
+                                          ),
+                                        ));
+                                  },
+                                  isLike: isLiked,
+                                  onJaimeTap: () async {
+                                    Aimer(data[index]['idPost']).then((aime) {
+                                      setState(() {
+                                        isLiked = isLiked;
+                                      });
                                     });
-                                  });
-                                },
-                                Legende: data[index]['Legende'],
-                                nbrAime: (!sn.hasData ||
-                                        sn.data?["idUser"][1] == null)
-                                    ? "..."
-                                    : sn.data["idUser"][1].toString(),
-                                Nom: data[index]['nom'],
-                                Prenom: data[index]['prenom'],
-                                PathContenu: data[index]['PathContenu'],
-                                PathProfile: data[index]['imagePath'],
-                                TypeContenue: data[index]['type'],
-                              );
-                            }),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Container(
-                        width: w,
-                        child: FutureBuilder<dynamic>(
-                            future: getNbrAimes(data[index]['idPost']),
-                            builder: (context, sn) {
-                              bool isLiked = sn.hasData
-                                  ? sn.data["idUser"][2] == 1
-                                  : false;
-                              return PostContainer(
-                                CommentTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CommentaireVue(
-                                          UsNom: widget.user.nom,
-                                          UsPrenom: widget.user.prenom,
-                                          UsProfilPath: widget.user.imageName,
-                                          idPost: data[index]['idPost'],
-                                          idUser: widget.user.Id,
-                                          isLike: isLiked,
-                                          Legende: data[index]['Legende'],
-                                          nbrAime: (!sn.hasData ||
-                                                  sn.data?["idUser"][1] == null)
-                                              ? "..."
-                                              : sn.data["idUser"][1].toString(),
-                                          Nom: data[index]['nom'],
-                                          Prenom: data[index]['prenom'],
-                                          PathContenu: data[index]
-                                              ['PathContenu'],
-                                          PathProfile: data[index]['imagePath'],
-                                          TypeContenue: data[index]['type'],
-                                        ),
-                                      ));
-                                },
-                                isLike: isLiked,
-                                onJaimeTap: () async {
-                                  Aimer(data[index]['idPost']).then((aime) {
-                                    setState(() {
-                                      isLiked = isLiked;
-                                    });
-                                  });
-                                },
-                                Legende: data[index]['Legende'],
-                                nbrAime: (!sn.hasData ||
-                                        sn.data?["idUser"][1] == null)
-                                    ? "..."
-                                    : sn.data["idUser"][1].toString(),
-                                Nom: data[index]['nom'],
-                                Prenom: data[index]['prenom'],
-                                PathContenu: data[index]['PathContenu'],
-                                PathProfile: data[index]['imagePath'],
-                                TypeContenue: data[index]['type'],
-                              );
-                            }),
-                      );
-                    }
-                  },
+                                  },
+                                  Legende: data[index]['Legende'],
+                                  nbrAime: (!sn.hasData ||
+                                          sn.data?["idUser"][1] == null)
+                                      ? "..."
+                                      : sn.data["idUser"][1].toString(),
+                                  Nom: data[index]['nom'],
+                                  Prenom: data[index]['prenom'],
+                                  PathContenu: data[index]['PathContenu'],
+                                  PathProfile: data[index]['imagePath'],
+                                  TypeContenue: data[index]['type'],
+                                );
+                              }),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
       ),

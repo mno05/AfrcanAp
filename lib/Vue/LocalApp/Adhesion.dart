@@ -127,11 +127,10 @@ class Adhesion extends StatelessWidget {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => FormAdh(user: user)));
 
                         }else{
-                          BasicsWidgets.alert("Vous étes déjà membre", context);
+                          BasicsWidgets.alert("Vous êtes déjà membre", context);
                         }
                       } 
                       );
-                      ;
                     },
                     child: Text("J'adhére"),
                     style: ButtonStyle(

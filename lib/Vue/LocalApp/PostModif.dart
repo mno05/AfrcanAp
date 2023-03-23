@@ -8,29 +8,44 @@ import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
+import 'package:african_ap/Vue/Widgets/VideoPlayer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
-class PostVue extends StatefulWidget {
+class PostModif extends StatefulWidget {
   final SuperUser superUser;
-  const PostVue({super.key, required this.superUser});
+  final Post post;
+  const PostModif({
+    super.key,
+    required this.superUser,
+    required this.post,
+  });
 
   @override
-  State<PostVue> createState() => _PostVueState();
+  State<PostModif> createState() => _PostModifState();
 }
 
-class _PostVueState extends State<PostVue> {
-  bool PhotoIsSelectionned = false;
-  bool VideoIsSelectionned = false;
+class _PostModifState extends State<PostModif> {
+  late bool PhotoIsSelectionned = false;
+  late bool VideoIsSelectionned = false;
 
   File img = File("");
   String imgName = "nul";
   XFile? imageFile;
-  TextEditingController Legende = TextEditingController();
-  String Portee = "Tout le monde";
+  late TextEditingController Legende;
+  late String Portee;
+  String IsChange = "No";
+
+  @override
+  void initState() {
+    Legende = TextEditingController(text: widget.post.Legende);
+    Portee = widget.post.Portee;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +61,7 @@ class _PostVueState extends State<PostVue> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          "Créer un post",
+          "Modifier un post",
           style: TextStyle(
             color: Colors.black,
           ),
@@ -170,8 +185,7 @@ class _PostVueState extends State<PostVue> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             fontSize: 14,
-                                                            color:
-                                                                Colors.black,
+                                                            color: Colors.black,
                                                           ),
                                                         )
                                                       ],
@@ -199,15 +213,15 @@ class _PostVueState extends State<PostVue> {
                                                           ),
                                                         ),
                                                         Text(
-                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type!="Honneur"?widget.superUser.type:"d'"+widget.superUser.type}s seulement les autres ne veront pas celà",
+                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type != "Honneur" ? widget.superUser.type : "d'" + widget.superUser.type}s seulement les autres ne veront pas celà",
                                                             style: GoogleFonts
                                                                 .nunito(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
                                                               fontSize: 14,
-                                                              color: Colors
-                                                                  .black,
+                                                              color:
+                                                                  Colors.black,
                                                             ))
                                                       ],
                                                     ),
@@ -284,6 +298,16 @@ class _PostVueState extends State<PostVue> {
                         ),
                       ),
                     ),
+                    Text(
+                      widget.post.type == "Text"
+                          ? "Ajouter un contenu multimedia"
+                          : widget.post.type == "Photo"
+                              ? "Modifier la photo du post par :"
+                              : "Modifier la vidéo du post par :",
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                      ),
+                    ),
                     SizedBox(height: h * 0.01),
                     VideoIsSelectionned
                         ? Container()
@@ -309,6 +333,7 @@ class _PostVueState extends State<PostVue> {
                                         setState(() {
                                           PhotoIsSelectionned = false;
                                           imgName = "nul";
+                                          IsChange = "No";
                                           img = File("");
                                         });
                                       },
@@ -340,6 +365,7 @@ class _PostVueState extends State<PostVue> {
                                   imgName = imageFile!.path.split("/").last;
                                   setState(() {
                                     PhotoIsSelectionned = true;
+                                    IsChange = "Yes";
                                   });
                                 },
                               ),
@@ -356,6 +382,7 @@ class _PostVueState extends State<PostVue> {
                                         setState(() {
                                           VideoIsSelectionned = false;
                                           imgName = "nul";
+                                          IsChange = "No";
                                           img = File("");
                                         });
                                       },
@@ -387,20 +414,25 @@ class _PostVueState extends State<PostVue> {
                                   imgName = imageFile!.path.split("/").last;
                                   setState(() {
                                     VideoIsSelectionned = true;
+                                    IsChange = "Yes";
                                   });
                                 },
                               ),
                     SizedBox(height: h * 0.07),
                     ElevatedButton(
-                        child: Text("Publier"),
-                        style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(AppData.BasicColor)),
+                        child: Text("Modifier"),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(AppData.BasicColor)),
                         onPressed: () {
                           if (Legende.text.isNotEmpty || imgName != "nul") {
                             log((imgName).toString());
-                            PostController.Publier(
+                            PostController.Modifier(
                               context,
                               Post(
+                                idPost: widget.post.idPost,
                                 idUser: widget.superUser.idSuper!,
+
                                 Legende: Legende.text,
                                 Portee:
                                     Portee == "Tout le monde" ? "Tout" : Portee,
@@ -412,6 +444,7 @@ class _PostVueState extends State<PostVue> {
                                 PathContenu: imgName,
                                 fileData: img,
                               ),
+                              IsChange
                             );
                           } else {
                             Toast.show("Vous n'avez rien entrer");
