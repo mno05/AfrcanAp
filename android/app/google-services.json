@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "494203664603",
+    "project_id": "myapp-9aa8d",
+    "storage_bucket": "myapp-9aa8d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494203664603:android:bccd0e1f5f92ee6e31f4fe",
+        "android_client_info": {
+          "package_name": "mno.moble.app.african_ap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494203664603-c0r22mpkglbmkmgicsij5es8hfclvkkv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmfF1ASURI2qU_stRBDwv3WCm6mggDhKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494203664603-c0r22mpkglbmkmgicsij5es8hfclvkkv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

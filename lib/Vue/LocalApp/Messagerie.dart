@@ -35,7 +35,6 @@ class _MessagerieState extends State<Messagerie> {
     await ContactsController.ContactMessage(widget.superUser.idSuper!)
         .then((Su) {
       setState(() {
-      
         superUsers = Su;
       });
     });
@@ -45,8 +44,7 @@ class _MessagerieState extends State<Messagerie> {
   void initState() {
     try {
       remplirUsersEtMessages();
-    } catch (e) {
-    }
+    } catch (e) {}
     // Timer(
     //   Duration(seconds: 15),
     //   () {
@@ -63,6 +61,7 @@ class _MessagerieState extends State<Messagerie> {
 
     getAllMessageUsers();
   }
+
   getAllMessageUsers() async {
     final response = await http.post(
         Uri.parse("https://myap.moglich.net/api/MessageContact.php"),
@@ -107,7 +106,10 @@ class _MessagerieState extends State<Messagerie> {
     print(dataContacts[0]["idSuper"]);
     double h = Media.height(context);
     double w = Media.width(context);
-    Timer(Duration(seconds: 3), () => getAllMessageUsers(),);
+    Timer(
+      Duration(seconds: 3),
+      () => getAllMessageUsers(),
+    );
     // log("\n\n\n\n\n\n\n ${msg[0].text}");
     return Scaffold(
         backgroundColor: Color(0xFFEEEFF0),
@@ -136,9 +138,7 @@ class _MessagerieState extends State<Messagerie> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-
-                      ],
+                      children: [],
                     ),
                     SizedBox(height: 5),
                     Row(
@@ -149,9 +149,8 @@ class _MessagerieState extends State<Messagerie> {
                           height: h * 0.05,
                           width: w / 1.5,
                           decoration: BoxDecoration(
-                          color: Colors.grey[350],
-                          borderRadius: BorderRadius.circular(20),
-
+                            color: Colors.grey[350],
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: TextField(
                             decoration: InputDecoration(
@@ -190,7 +189,7 @@ class _MessagerieState extends State<Messagerie> {
                     //     ],
                     //   )
                     RefreshIndicator(
-                        onRefresh: () async{
+                        onRefresh: () async {
                           remplirUsersEtMessages();
                         },
                         child: ListView.builder(
@@ -211,58 +210,65 @@ class _MessagerieState extends State<Messagerie> {
                                         child: Card(
                                           elevation: 1,
                                           child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-
+                                            padding: const EdgeInsets.all(8.0),
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(30)
-                                            ),
+                                                borderRadius:
+                                                    BorderRadius.circular(30)),
                                             child: ListTile(
                                               leading: Container(
-                                                
                                                 decoration: BoxDecoration(
                                                   boxShadow: [
                                                     BoxShadow(
                                                       blurRadius: 3,
-                                                       color: Colors.black54,
+                                                      color: Colors.black54,
                                                     )
                                                   ],
-                                                  borderRadius: BorderRadius.circular(50),
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
                                                 ),
                                                 child: CircleAvatar(
                                                   backgroundImage: NetworkImage(
-                                                      superUsers[index].imagePath),
+                                                      superUsers[index]
+                                                          .imagePath),
                                                   radius: 25,
                                                   backgroundColor: Colors.grey,
                                                 ),
                                               ),
                                               title: Text(
                                                 "${dataContacts[index]['prenom']} ${dataContacts[index]['nom']}",
+                                                maxLines: 1,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
+                                                  fontSize: w * .035,
                                                 ),
                                               ),
                                               subtitle: Text(
                                                 (!snapshot.hasData ||
-                                                        snapshot.data?[0]["text"] ==
+                                                        snapshot.data?[0]
+                                                                ["text"] ==
                                                             null)
                                                     ? "..."
                                                     : snapshot.data?[0]["text"],
                                                 maxLines: 1,
                                               ),
-                                              trailing: Text((!snapshot.hasData ||
-                                                      snapshot.data?[0]["date"] ==
+                                              trailing: Text((!snapshot
+                                                          .hasData ||
+                                                      snapshot.data?[0]
+                                                              ["date"] ==
                                                           null)
                                                   ? "..."
-                                                  : "${DateDifference.time(DateDifference.DateFromServerToDateTime(snapshot.data[0]),DateTime.now())}"),
-                                                  
-                                                  // : "${snapshot.data[0]["date"].toString().split("-").last.split(" ").last.split(":").first}:${snapshot.data[0]["date"].toString().split("-").last.split(" ").last.split(":")[1]}"),
+                                                  : "${DateDifference.time(DateDifference.DateFromServerToDateTime(snapshot.data[0]), DateTime.now())}"),
+
+                                              // : "${snapshot.data[0]["date"].toString().split("-").last.split(" ").last.split(":").first}:${snapshot.data[0]["date"].toString().split("-").last.split(" ").last.split(":")[1]}"),
                                               onTap: () {
                                                 Navigator.of(context)
                                                     .push(MaterialPageRoute(
                                                   builder: (context) => Message(
-                                                    SuperUserDes: widget.superUser,
-                                                    SuperUserEx: superUsers[index],
-                                                                                  
+                                                    SuperUserDes:
+                                                        widget.superUser,
+                                                    SuperUserEx:
+                                                        superUsers[index],
+
                                                     // messages: IdExAnMessages[
                                                     //     superUsers[index].idSuper]!,
                                                   ),

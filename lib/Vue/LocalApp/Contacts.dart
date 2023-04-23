@@ -176,15 +176,19 @@ class _ContactsState extends State<Contacts> {
                     ),
                     title: Text(
                       "${superUsers[index].prenom} ${superUsers[index].nom}",
+                      maxLines: 1,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: w*.035,
+                        
                       ),
                     ),
                     subtitle: Text("${superUsers[index].domainesExpertise}"),
                     trailing: Text(
-                      "Membre ${superUsers[index].type!="Honneur"?superUsers[index].type:"d'"+superUsers[index].type}",
+                      "Membre ${superUsers[index].type!="Honneur"?superUsers[index].type!="Effectif"?superUsers[index].type!="Adherent"?superUsers[index].type:"adhérent":"effectif":"d'honneur"}",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
+                        fontSize: w*.03,
                       ),
                     ),
                     onTap: () {

@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:african_ap/Controllers/InscriptionController.dart';
+import 'package:african_ap/Controllers/LoginController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Services/Auth.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/Auth/RecupOTPInscrip.dart';
@@ -145,10 +147,20 @@ class _InscriptionState extends State<Inscription> {
                               onPressed: () {
                                 if (_key.currentState!.validate()) {
                                   if (passw.text == conPassW.text) {
-                                    ChangePage.SliderPush(
-                                        context: context,
-                                        push: RecupOTPInscrip(
-                                          user: User(
+                                    // ChangePage.SliderPush(
+                                    //     context: context,
+                                    //     push: RecupOTPInscrip(
+                                    //       user: UserM(
+                                    //         prenom: prenom.text,
+                                    //         nom: nom.text,
+                                    //         telephone: "Vide",
+                                    //         email: email.text,
+                                    //         passw: passw.text,
+                                    //         imageName: imgName,
+                                    //         imageData: img,
+                                    //       ),
+                                    //     ));
+                                    InscriptionController.UserInscription(context, UserM(
                                             prenom: prenom.text,
                                             nom: nom.text,
                                             telephone: "Vide",
@@ -156,8 +168,7 @@ class _InscriptionState extends State<Inscription> {
                                             passw: passw.text,
                                             imageName: imgName,
                                             imageData: img,
-                                          ),
-                                        ));
+                                          ),);
                                   } else {
                                     Toast.show(
                                       "Le mot de passe diffère sa confirmation",
@@ -169,64 +180,64 @@ class _InscriptionState extends State<Inscription> {
                           ],
                         ),
                       ),
-                      SizedBox(height: h / 25),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            height: 0.4,
-                            color: Colors.black54,
-                            width: w / 4,
-                          ),
-                          Container(
-                            child: Text(
-                              "Enregistrez-vous avec",
-                              style: TextStyle(
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 0.4,
-                            color: Colors.black54,
-                            width: w / 4,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: h / 50),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            height: h / 15,
-                            width: w / 3,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black54,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                                child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    width: 40,
-                                    child: Image.asset("img/google_logo.webp"),
-                                  ),
-                                  Text("Google"),
-                                ],
-                              ),
-                            )),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: h / 80),
+                      // SizedBox(height: h / 25),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      //   children: [
+                      //     Container(
+                      //       height: 0.4,
+                      //       color: Colors.black54,
+                      //       width: w / 4,
+                      //     ),
+                      //     Container(
+                      //       child: Text(
+                      //         "Enregistrez-vous avec",
+                      //         style: TextStyle(
+                      //           color: Colors.black54,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Container(
+                      //       height: 0.4,
+                      //       color: Colors.black54,
+                      //       width: w / 4,
+                      //     ),
+                      //   ],
+                      // ),
+                      // // SizedBox(height: h / 50),
+                      // // Row(
+                      // //   mainAxisAlignment: MainAxisAlignment.end,
+                      // //   children: [
+                      // //     Container(
+                      // //       height: h / 15,
+                      // //       width: w / 3,
+                      // //       decoration: BoxDecoration(
+                      // //         border: Border.all(
+                      // //           width: 1,
+                      // //           color: Colors.black54,
+                      // //         ),
+                      // //         borderRadius: BorderRadius.circular(8),
+                      // //       ),
+                      // //       child: Center(
+                      // //           child: Padding(
+                      // //         padding: const EdgeInsets.all(8.0),
+                      // //         child: Row(
+                      // //           crossAxisAlignment: CrossAxisAlignment.center,
+                      // //           mainAxisAlignment: MainAxisAlignment.center,
+                      // //           children: [
+                      // //             Container(
+                      // //               height: 40,
+                      // //               width: 40,
+                      // //               child: Image.asset("img/google_logo.webp"),
+                      // //             ),
+                      // //             Text("Google"),
+                      // //           ],
+                      // //         ),
+                      // //       )),
+                      // //     ),
+                      // //   ],
+                      // // ),
+                      // // SizedBox(height: h / 80),
 
                       // Column(
                       //   children: [
@@ -333,27 +344,30 @@ class _InscriptionState extends State<Inscription> {
             ),
           ),
         ),
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Avez-vous déjà un compte ?  "),
-            InkWell(
-              onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginVue(),
-                    ));
-              },
-              child: Text(
-                "Connectez-vous",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppData.BasicColorNew,
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Avez-vous déjà un compte ?  "),
+              InkWell(
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginVue(),
+                      ));
+                },
+                child: Text(
+                  "Connectez-vous",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppData.BasicColorNew,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

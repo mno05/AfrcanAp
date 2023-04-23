@@ -11,6 +11,8 @@ import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../Controllers/HandleAuth.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -18,66 +20,63 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
+class _SplashScreenState extends State<SplashScreen> {
   bool _isActive = false;
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    Timer(Duration(seconds: 3), () async {
-      User user = await SaveUser.getUser();
-      if (user.Id.isEmpty) {
-        await SaveSuperUser.getSuperUser().then((value) {
-          if (value.prenom.isEmpty) {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => IntroductionS(),
-            ));
-          } else {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => Principal(
-                // superUser: value,
-                  user: User(
-                      prenom: value.prenom,
-                      nom: value.nom,
-                      telephone: value.telephone,
-                      email: value.adresseMail,
-                      passw: "",
-                      imageName: value.imagePath,
-                      imageData: File(''))),
-            ));
-          }
-        });
-      } else {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => Principal(user: user),
-        ));
-      }
-    });
+    // Timer(Duration(seconds: 3), () async {
+    //   UserM user = await SaveUser.getUser();
+    //   if (user.Id.isEmpty) {
+    //     await SaveSuperUser.getSuperUser().then((value) {
+    //       if (value.prenom.isEmpty) {
+    //         Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //           builder: (context) => IntroductionS(),
+    //         ));
+    //       } else {
+    //         Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //           builder: (context) => Principal(
+    //               // superUser: value,
+    //               user: UserM(
+    //                   prenom: value.prenom,
+    //                   nom: value.nom,
+    //                   telephone: value.telephone,
+    //                   email: value.adresseMail,
+    //                   passw: "",
+    //                   imageName: value.imagePath,
+    //                   imageData: File(''))),
+    //         ));
+    //       }
+    //     });
+    //   } else {
+    //     Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //       builder: (context) => Principal(user: user),
+    //     ));
+    //   }
+    // });
     super.initState();
   }
-  
-@override
-void dispose(){
-  super.dispose();
-  WidgetsBinding.instance.removeObserver(this);
-}
 
-@override
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed){
-      log("Utilsation de l'app");      
+    if (state == AppLifecycleState.resumed) {
+      log("Utilsation de l'app");
     } else {
-      log("Non Utilsation de l'app");      
+      log("Non Utilsation de l'app");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return AnimatedSplashScreen(
         duration: 3500,
         splash: Image.asset("img/logo.png"),
         splashIconSize: MediaQuery.of(context).size.height * 0.15,
-        nextScreen: SplashScreen(),
+        nextScreen: HandleAuth(),
         splashTransition: SplashTransition.fadeTransition,
         backgroundColor: Colors.white);
     // Timer(
@@ -87,6 +86,5 @@ void dispose(){
     //   )),
     // );
     // super.initState();
-
   }
 }

@@ -250,7 +250,7 @@ class _PostContainerState extends State<PostContainer> {
                     Text(widget.nbrAime),
                     SizedBox(width: w * .02),
                     Text(
-                      "Personnes ont aimés ça",
+                      "personnes ont aimés ça",
                       style: GoogleFonts.nunito(),
                     ),
                   ],

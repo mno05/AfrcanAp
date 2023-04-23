@@ -11,6 +11,7 @@ import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/ChangePassWord.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
+import 'package:african_ap/Vue/Auth/RecupOTP.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonC.dart';
@@ -29,7 +30,7 @@ import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
 class RecupOTPInscrip extends StatefulWidget {
-  final User user;
+  final UserM user;
   const RecupOTPInscrip({
     super.key,
     required this.user,
@@ -39,10 +40,20 @@ class RecupOTPInscrip extends StatefulWidget {
 }
 
 class _RecupOTPInscripState extends State<RecupOTPInscrip> {
+  late int recupOTP;
+
+
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    EnvoyerMail();
     super.initState();
+  }
+  void EnvoyerMail() {
+    
+     EnvoieMailController.Envoiemail(widget.user.email, context).then((value) {
+      recupOTP=value;
+     });
   }
 
   final _key = GlobalKey<FormState>();
@@ -105,15 +116,14 @@ class _RecupOTPInscripState extends State<RecupOTPInscrip> {
                         ButtonC(
                           text: "Valider",
                           onPressed: () {
-                            var recupOTP = EnvoieMailController.Envoiemail(widget.user.email, context);
+                            // var recupOTP = EnvoieMailController.Envoiemail(
+                            //     widget.user.email, context);
                             if (_key.currentState!.validate()) {
                               int otpEnint = int.parse(otp.text);
                               if (otpEnint == recupOTP) {
                                 Toast.show("Code Vérifié");
-                                 InscriptionController.UserInscription(
-                                      context,
-                                      widget.user
-                                    );
+                                InscriptionController.UserInscription(
+                                    context, widget.user);
                               } else {
                                 Toast.show("Code invalide");
                               }
@@ -123,61 +133,61 @@ class _RecupOTPInscripState extends State<RecupOTPInscrip> {
                       ],
                     ),
                   ),
-                  SizedBox(height: h / 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        height: 0.4,
-                        color: Colors.black54,
-                        width: w / 4,
-                      ),
-                      Container(
-                        child: Text(
-                          "Connectez-vous avec",
-                          style: TextStyle(
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 0.4,
-                        color: Colors.black54,
-                        width: w / 4,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: h / 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: h / 15,
-                        width: w / 3,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.black54,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                            child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: Image.asset("img/google_logo.webp"),
-                            ),
-                            Text("Google"),
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: h / 45),
+                  // SizedBox(height: h / 25),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     Container(
+                  //       height: 0.4,
+                  //       color: Colors.black54,
+                  //       width: w / 4,
+                  //     ),
+                  //     Container(
+                  //       child: Text(
+                  //         "Connectez-vous avec",
+                  //         style: TextStyle(
+                  //           color: Colors.black54,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Container(
+                  //       height: 0.4,
+                  //       color: Colors.black54,
+                  //       width: w / 4,
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: h / 50),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     Container(
+                  //       height: h / 15,
+                  //       width: w / 3,
+                  //       decoration: BoxDecoration(
+                  //         border: Border.all(
+                  //           width: 1,
+                  //           color: Colors.black54,
+                  //         ),
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: Center(
+                  //           child: Row(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: [
+                  //           Container(
+                  //             height: 40,
+                  //             width: 40,
+                  //             child: Image.asset("img/google_logo.webp"),
+                  //           ),
+                  //           Text("Google"),
+                  //         ],
+                  //       )),
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: h / 45),
                 ],
               ),
             ),

@@ -65,7 +65,7 @@ class SuperUserController {
         int succes = resultat[1];
         if (succes == 1) {
           log("Login");
-          User us = User(
+          UserM us = UserM(
             Id: recupUser["idSuper"],
             prenom: recupUser["prenom"],
             nom: recupUser["nom"],
@@ -128,7 +128,7 @@ class SuperUserController {
         int succes = resultat[1];
         if (succes == 1) {
           log("Login");
-          User us = User(
+          UserM us = UserM(
             Id: recupUser["idSuper"],
             prenom: recupUser["prenom"],
             nom: recupUser["nom"],

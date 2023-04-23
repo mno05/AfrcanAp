@@ -25,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class Principal extends StatefulWidget {
-  User user;
+  UserM user;
   // SuperUser? superUser;
   Principal({
     super.key,
@@ -73,6 +73,7 @@ class _PrincipalState extends State<Principal> {
     if (response.statusCode == 200) {
       setState(() {
         data = json.decode(response.body);
+        
         get = true;
       });
       // return data[""]["idUser"];
@@ -247,7 +248,36 @@ class _PrincipalState extends State<Principal> {
           ActionContainer(
             Icons.notifications,
             tap: () {
-              ChangePage.Push(context: context, push: Notification1());
+              SaveUser.getUser().then((value) {
+                if (value.isLambda) {
+                  BasicsWidgets.YesOrNoDialogue(
+                    context: context,
+                    msg:
+                        "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                    YesText: "J'adhère",
+                    NoText: "Non merci",
+                    NonPressed: () {
+                      Navigator.pop(context);
+                    },
+                    YesPressed: () =>
+                        Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Adhesion(),
+                    )),
+                  );
+                } else {
+                  SaveSuperUser.getSuperUser().then((value) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Notification1(
+                          Portee: value.type,
+                          imagePathUser: value.imagePath,
+                        ),
+                      ),
+                    );
+                  });
+                }
+              });
             },
           ),
         ],

@@ -14,7 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:toast/toast.dart';
 
 class FormAdh extends StatefulWidget {
-  final User user;
+  final UserM user;
   const FormAdh({super.key, required this.user});
 
   @override
@@ -46,6 +46,7 @@ class _FormAdhState extends State<FormAdh> {
   bool selectedDate = false;
   String datevalue = "";
   String SelectedItem = "Statut professionnel*";
+  bool checkboxValue = true;
   @override
   void initState() {
     prenom.text = widget.user.prenom;
@@ -181,18 +182,22 @@ class _FormAdhState extends State<FormAdh> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Checkbox(
-                    value: false,
-                    onChanged: (value) {},
+                    value: checkboxValue,
+                    onChanged: (value) {
+                      setState(() {
+                        checkboxValue = value!;
+                      });
+                    },
                   ),
                   Container(
                     padding: EdgeInsets.all(5),
                     width: w * .8,
                     child: Text(
                       "Je confirme avoir pris connaissance et m’engage à respecter le Règlement d’Ordre Intérieur de l’A.S.B.L African Professionals *",
-                    textAlign: TextAlign.start,
-                    style: GoogleFonts.nunito(
-                      fontWeight: FontWeight.bold,
-                    ),
+                      textAlign: TextAlign.start,
+                      style: GoogleFonts.nunito(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -230,7 +235,8 @@ class _FormAdhState extends State<FormAdh> {
                       telephone.text.isNotEmpty &&
                       adresseMail.text.isNotEmpty &&
                       fonction.text.isNotEmpty &&
-                      domainesExpertise.text.isNotEmpty) {
+                      domainesExpertise.text.isNotEmpty &&
+                      checkboxValue) {
                     BasicsWidgets.ThreeActions(
                       "J'adhére en tant que Membre?",
                       context,
@@ -257,7 +263,8 @@ class _FormAdhState extends State<FormAdh> {
                             autreStatut: aute,
                             fonction: fonction.text,
                             domainesExpertise: domainesExpertise.text,
-                            imagePath: widget.user.imageName);
+                            imagePath: widget.user.imageName,
+                            dateAdhesion: datevalue);
                         SuperUserController.Inscription(context, superUser);
                       },
                       NoText: "Effectif",
@@ -283,6 +290,7 @@ class _FormAdhState extends State<FormAdh> {
                                 autreStatut: aute,
                                 fonction: fonction.text,
                                 domainesExpertise: domainesExpertise.text,
+                                dateAdhesion: datevalue,
                                 imagePath: widget.user.imageName));
                       },
                       CancelText: "D'honneur",
@@ -307,6 +315,7 @@ class _FormAdhState extends State<FormAdh> {
                                   : SelectedItem,
                               autreStatut: aute,
                               fonction: fonction.text,
+                              dateAdhesion: datevalue,
                               domainesExpertise: domainesExpertise.text,
                               imagePath: widget.user.imageName),
                         );
@@ -314,7 +323,7 @@ class _FormAdhState extends State<FormAdh> {
                     );
                   } else {
                     Toast.show(
-                        "Veuillez renseigner tous les champs obligatoires");
+                        "Veuillez renseigner tous les champs obligatoires et cocher la case");
                   }
                 },
                 child: Text("Adhérer"),

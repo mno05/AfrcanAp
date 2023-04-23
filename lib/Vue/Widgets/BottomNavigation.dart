@@ -118,7 +118,7 @@ class BottomNavigation extends StatelessWidget {
                 )
               : IconButton(
                   onPressed: () async {
-                    User user = await SaveUser.getUser();
+                    UserM user = await SaveUser.getUser();
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

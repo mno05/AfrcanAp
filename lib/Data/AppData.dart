@@ -6,3 +6,4 @@ class AppData{
 
 }
 var dataContacts;
+var dataNotifiacations;

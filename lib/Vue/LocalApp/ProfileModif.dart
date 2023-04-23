@@ -19,7 +19,7 @@ import 'package:toast/toast.dart';
 
 class ProfileModif extends StatefulWidget {
   final SuperUser? superUser;
-  final User? user;
+  final UserM? user;
 
   const ProfileModif({
     super.key,
@@ -48,39 +48,48 @@ class _ProfileModifState extends State<ProfileModif> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    prenom = TextEditingController(
-      text: widget.superUser!.prenom,
-    );
-    nom = TextEditingController(
-      text: widget.superUser!.nom,
-    );
-    noms = TextEditingController(
-      text: "${widget.superUser!.prenom} ${widget.superUser!.nom}",
-    );
-    paysOrgine = TextEditingController(
-      text: widget.superUser!.paysOrgine,
-    );
-    adresse = TextEditingController(
-      text: widget.superUser!.adresse,
-    );
-    codePostal = TextEditingController(
-      text: widget.superUser!.codePostal,
-    );
-    Localite = TextEditingController(
-      text: widget.superUser!.localite,
-    );
-    pays = TextEditingController(
-      text: widget.superUser!.pays,
-    );
-    fonction = TextEditingController(
-      text: widget.superUser!.fonction,
-    );
-    statutpro = TextEditingController(
-      text: widget.superUser!.statutpro,
-    );
-    domainesExpertise = TextEditingController(
-      text: widget.superUser!.domainesExpertise,
-    );
+    if (widget.user == null) {
+      prenom = TextEditingController(
+        text: widget.superUser!.prenom,
+      );
+      nom = TextEditingController(
+        text: widget.superUser!.nom,
+      );
+      noms = TextEditingController(
+        text: "${widget.superUser!.prenom} ${widget.superUser!.nom}",
+      );
+      paysOrgine = TextEditingController(
+        text: widget.superUser!.paysOrgine,
+      );
+      adresse = TextEditingController(
+        text: widget.superUser!.adresse,
+      );
+      codePostal = TextEditingController(
+        text: widget.superUser!.codePostal,
+      );
+      Localite = TextEditingController(
+        text: widget.superUser!.localite,
+      );
+      pays = TextEditingController(
+        text: widget.superUser!.pays,
+      );
+      fonction = TextEditingController(
+        text: widget.superUser!.fonction,
+      );
+      statutpro = TextEditingController(
+        text: widget.superUser!.statutpro,
+      );
+      domainesExpertise = TextEditingController(
+        text: widget.superUser!.domainesExpertise,
+      );
+    } else {
+      prenom = TextEditingController(
+        text: widget.user!.prenom,
+      );
+      nom = TextEditingController(
+        text: widget.user!.nom,
+      );
+    }
   }
 
   XFile? _imageFile;
@@ -105,7 +114,7 @@ class _ProfileModifState extends State<ProfileModif> {
     double w = Media.width(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mon Profile"),
+        title: Text("Mon Profil"),
         backgroundColor: AppData.BasicColor,
       ),
       body: Container(
@@ -122,7 +131,7 @@ class _ProfileModifState extends State<ProfileModif> {
                         children: [
                           Padding(
                               padding: const EdgeInsets.all(5.0),
-                              child: ImageProfil()),
+                              child: ImageProfil(widget.superUser!.imagePath)),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 2.0),
                             child: Row(
@@ -192,7 +201,7 @@ class _ProfileModifState extends State<ProfileModif> {
                           infoBulle(
                             height: h,
                             width: w,
-                            type: "Code Postal",
+                            type: "Code postal",
                             value: codePostal,
                           ),
                           infoBulle(
@@ -222,7 +231,7 @@ class _ProfileModifState extends State<ProfileModif> {
                           infoBulle(
                             height: h,
                             width: w,
-                            type: "Domaines d'exp.",
+                            type: "Domaine d'exp.",
                             value: domainesExpertise,
                           ),
                           Padding(
@@ -230,13 +239,129 @@ class _ProfileModifState extends State<ProfileModif> {
                             child: ButtonC(
                               text: "Valider",
                               onPressed: () {
-                                UpdateController.UpdateSuperUser(context: context, superUser: SuperUser(prenom: prenom.text, nom: nom.text, paysOrgine: paysOrgine.text, adresse: adresse.text, codePostal: codePostal.text, localite: Localite.text, pays: pays.text, telephone: " ", adresseMail: widget.superUser!.adresseMail, type: " ", statutpro: statutpro.text, autreStatut: " ", fonction: fonction.text, domainesExpertise: domainesExpertise.text, imagePath: " "), imageData: img, imageName: imgName);
+                                UpdateController.UpdateSuperUser(
+                                    context: context,
+                                    superUser: SuperUser(
+                                        prenom: prenom.text,
+                                        nom: nom.text,
+                                        paysOrgine: paysOrgine.text,
+                                        adresse: adresse.text,
+                                        codePostal: codePostal.text,
+                                        localite: Localite.text,
+                                        pays: pays.text,
+                                        telephone: " ",
+                                        adresseMail:
+                                            widget.superUser!.adresseMail,
+                                        type: " ",
+                                        statutpro: statutpro.text,
+                                        autreStatut: " ",
+                                        fonction: fonction.text,
+                                        domainesExpertise:
+                                            domainesExpertise.text,
+                                        imagePath: " "),
+                                    imageData: img,
+                                    imageName: imgName);
                               },
                             ),
                           )
                         ],
                       )
-                    : Container(),
+                    : Container(
+                        height: h,
+                        width: w,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          // crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ImageProfil(widget.user!.imageName),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      BasicsWidgets.BoitInfo(context, noms, () {
+                                        setState(() {
+                                          prenom.text =
+                                              noms.text.split(" ").first;
+                                          nom.text = noms.text.split(" ")[1];
+                                        });
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    child: Text(
+                                      "${prenom.text} ${nom.text}",
+                                      style: GoogleFonts.nunito(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.edit,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(5.0),
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     children: [
+                            //       Text(
+                            //         "Membre ${widget.superUser!.type != "Honneur" ? widget.superUser!.type : "d'" + widget.superUser!.type}",
+                            //         style: GoogleFonts.nunito(
+                            //           fontWeight: FontWeight.bold,
+                            //           fontSize: 16,
+                            //         ),
+                            //       ),
+                            //       // Icon(Icons.edit),
+                            //     ],
+                            //   ),
+                            // ),
+                            Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                "${widget.user!.email}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ButtonC(
+                                text: "Valider",
+                                onPressed: () {
+                                  // UpdateController.UpdateSuperUser(
+                                  //     context: context,
+                                  //     superUser: SuperUser(
+                                  //         prenom: prenom.text,
+                                  //         nom: nom.text,
+                                  //         paysOrgine: paysOrgine.text,
+                                  //         adresse: adresse.text,
+                                  //         codePostal: codePostal.text,
+                                  //         localite: Localite.text,
+                                  //         pays: pays.text,
+                                  //         telephone: " ",
+                                  //         adresseMail:
+                                  //             widget.superUser!.adresseMail,
+                                  //         type: " ",
+                                  //         statutpro: statutpro.text,
+                                  //         autreStatut: " ",
+                                  //         fonction: fonction.text,
+                                  //         domainesExpertise:
+                                  //             domainesExpertise.text,
+                                  //         imagePath: " "),
+                                  //     imageData: img,
+                                  //     imageName: imgName);
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
               ],
             ),
           ),
@@ -276,7 +401,7 @@ class _ProfileModifState extends State<ProfileModif> {
               Text(
                 "${type} : ",
                 style: GoogleFonts.nunito(
-                  fontSize: 16,
+                  fontSize: width * .035,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -284,7 +409,7 @@ class _ProfileModifState extends State<ProfileModif> {
                 "${v}",
                 maxLines: 3,
                 style: GoogleFonts.nunito(
-                  fontSize: 16,
+                  fontSize: width * .035,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -297,14 +422,14 @@ class _ProfileModifState extends State<ProfileModif> {
     );
   }
 
-  Widget ImageProfil() {
+  Widget ImageProfil(String pathNetWork) {
     return Container(
       child: Stack(children: [
         CircleAvatar(
           backgroundColor: Colors.black,
           radius: Media.height(context) / 12,
           backgroundImage: _imageFile == null
-              ? NetworkImage(widget.superUser!.imagePath)
+              ? NetworkImage(pathNetWork)
               : FileImage(File(_imageFile!.path)) as ImageProvider,
         ),
         Positioned(

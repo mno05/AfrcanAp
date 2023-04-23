@@ -13,7 +13,6 @@ import 'package:african_ap/Vue/LocalApp/Apropos.dart';
 import 'package:african_ap/Vue/LocalApp/ContactUs.dart';
 import 'package:african_ap/Vue/LocalApp/Contacts.dart';
 import 'package:african_ap/Vue/LocalApp/Invitation.dart';
-import 'package:african_ap/Vue/LocalApp/MiscChat01.dart';
 import 'package:african_ap/Vue/LocalApp/Parametre.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/LocalApp/ProfileModif.dart';
@@ -163,7 +162,7 @@ class DrawerC extends StatelessWidget {
                   size: 30,
                 ),
                 title: Text(
-                  "Nous contactez",
+                  "Nous contacter",
                   style: TextStyle(
                     fontSize: 12,
                   ),
@@ -235,7 +234,7 @@ class DrawerC extends StatelessWidget {
                   size: 30,
                 ),
                 title: Text(
-                  "Trouvez un membre",
+                  "Trouver un membre",
                   style: TextStyle(
                     fontSize: 12,
                   ),

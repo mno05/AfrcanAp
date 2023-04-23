@@ -8,7 +8,7 @@ import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 
 class EnvoieMailController {
-  static Envoiemail(String mail, context) async {
+  static Future<int> Envoiemail(String mail, context) async {
     final reponse = await http.post(
         Uri.parse("https://myap.moglich.net/api/EmailOtp/"),
         body: {"email": mail});
@@ -30,5 +30,6 @@ class EnvoieMailController {
         log(e.toString());
       }
     }
+      return 0;
   }
 }

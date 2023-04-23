@@ -170,8 +170,7 @@ class _PostVueState extends State<PostVue> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             fontSize: 14,
-                                                            color:
-                                                                Colors.black,
+                                                            color: Colors.black,
                                                           ),
                                                         )
                                                       ],
@@ -199,15 +198,15 @@ class _PostVueState extends State<PostVue> {
                                                           ),
                                                         ),
                                                         Text(
-                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type!="Honneur"?widget.superUser.type:"d'"+widget.superUser.type}s seulement les autres ne veront pas celà",
+                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type != "Honneur" ? widget.superUser.type : "d'" + widget.superUser.type}s seulement les autres ne veront pas celà",
                                                             style: GoogleFonts
                                                                 .nunito(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
                                                               fontSize: 14,
-                                                              color: Colors
-                                                                  .black,
+                                                              color:
+                                                                  Colors.black,
                                                             ))
                                                       ],
                                                     ),
@@ -393,7 +392,9 @@ class _PostVueState extends State<PostVue> {
                     SizedBox(height: h * 0.07),
                     ElevatedButton(
                         child: Text("Publier"),
-                        style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(AppData.BasicColor)),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(AppData.BasicColor)),
                         onPressed: () {
                           if (Legende.text.isNotEmpty || imgName != "nul") {
                             log((imgName).toString());
@@ -412,6 +413,8 @@ class _PostVueState extends State<PostVue> {
                                 PathContenu: imgName,
                                 fileData: img,
                               ),
+                              widget.superUser.prenom,
+                              widget.superUser.nom,
                             );
                           } else {
                             Toast.show("Vous n'avez rien entrer");

@@ -28,4 +28,7 @@ class ChangePage {
   static Push({required BuildContext context, required Widget push}){
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => push,));
   }
+    static pushReplacement({required BuildContext context, required Widget push}){
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => push,));
+  }
 }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-class User {
-  User({
+class UserM {
+  UserM({
     required this.prenom,
     required this.nom,
     required this.telephone,

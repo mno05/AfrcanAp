@@ -5,6 +5,8 @@ import 'package:african_ap/Controllers/LoginController.dart';
 import 'package:african_ap/Controllers/SingInWith.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Services/Auth.dart';
+import 'package:african_ap/Services/dbServices.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
 import 'package:african_ap/Vue/Auth/PassewordForget.dart';
@@ -23,6 +25,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 class LoginVue extends StatefulWidget {
@@ -35,6 +38,7 @@ class _LoginVueState extends State<LoginVue> {
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    
     super.initState();
   }
 
@@ -79,7 +83,7 @@ class _LoginVueState extends State<LoginVue> {
                         padding: EdgeInsets.only(left: w * .05),
                         height: h / 10,
                         child: Text(
-                          "Salut, Bon retour !",
+                          "Bienvenue sur My AP",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: w / 15),
                         ),
@@ -113,7 +117,8 @@ class _LoginVueState extends State<LoginVue> {
                               height: h / 10,
                               child: InkWell(
                                 onTap: () {
-                                  ChangePage.SliderPush(context: context, push: PasswordForget());
+                                  ChangePage.SliderPush(
+                                      context: context, push: PasswordForget());
                                 },
                                 child: Text(
                                   "Mot de passe oublié?",
@@ -130,18 +135,20 @@ class _LoginVueState extends State<LoginVue> {
                           text: "Connexion",
                           onPressed: () {
                             if (_key.currentState!.validate()) {
-                              LoginController.UserLogin(
-                                context,
-                                User(
-                                  prenom: "",
-                                  nom: "",
-                                  telephone: "",
-                                  email: emailTelephone.text,
-                                  passw: passW.text,
-                                  imageName: "",
-                                  imageData: File(""),
-                                ),
-                              );
+                              // LoginController.UserLogin(
+                              //   context,
+                              //   UserM(
+                              //     prenom: "",
+                              //     nom: "",
+                              //     telephone: "",
+                              //     email: emailTelephone.text,
+                              //     passw: passW.text,
+                              //     imageName: "",
+                              //     imageData: File(""),
+                              //   ),
+                              // );
+                              AuthServices().Login(context, emailTelephone.text, passW.text);
+                              // dbServices().FromCacheOrFromServer();
                             }
                           },
                         ),
@@ -149,59 +156,60 @@ class _LoginVueState extends State<LoginVue> {
                     ),
                   ),
                   SizedBox(height: h / 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        height: 0.4,
-                        color: Colors.black54,
-                        width: w / 4,
-                      ),
-                      Container(
-                        child: Text(
-                          "Connectez-vous avec",
-                          style: TextStyle(
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 0.4,
-                        color: Colors.black54,
-                        width: w / 4,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: h / 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: h / 15,
-                        width: w / 3,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.black54,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                            child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: Image.asset("img/google_logo.webp"),
-                            ),
-                            Text("Google"),
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     Container(
+                  //       height: 0.4,
+                  //       color: Colors.black54,
+                  //       width: w / 4,
+                  //     ),
+                  //     Container(
+                  //       child: Text(
+                  //         "Connectez-vous avec",
+                  //         style: TextStyle(
+                  //           color: Colors.black54,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Container(
+                  //       height: 0.4,
+                  //       color: Colors.black54,
+                  //       width: w / 4,
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: h / 50),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     Container(
+                  //       height: h / 15,
+                  //       width: w / 3,
+                  //       decoration: BoxDecoration(
+                  //         border: Border.all(
+                  //           width: 1,
+                  //           color: Colors.black54,
+                  //         ),
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: Center(
+                  //         child: Row(
+                  //           crossAxisAlignment: CrossAxisAlignment.center,
+                  //           mainAxisAlignment: MainAxisAlignment.center,
+                  //           children: [
+                  //             Container(
+                  //               height: 40,
+                  //               width: 40,
+                  //               child: Image.asset("img/google_logo.webp"),
+                  //             ),
+                  //             Text("Google"),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   SizedBox(height: h / 45),
                 ],
               ),

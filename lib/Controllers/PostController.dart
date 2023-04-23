@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:african_ap/Controllers/NotificationController.dart';
 import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Models/Notifiacation.dart';
 import 'package:african_ap/Models/Post.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
@@ -14,7 +17,7 @@ import 'package:path/path.dart';
 import 'package:toast/toast.dart';
 
 class PostController {
-  static void Publier(context, Post post) async {
+  static void Publier(context, Post post,String prenom,String nom) async {
     BasicsWidgets.Load(context);
     try {
       String path = post.fileData!.path;
@@ -48,6 +51,9 @@ class PostController {
         int succes = resultat[1];
         if (succes == 1) {
           log(resultat.toString());
+          NotificationController.Notifier(
+            NotificationM(idUser: post.idUser, date: DateTime.now(), contenue: "Le membre $prenom $nom vient de publier un post sur la plateforme.", idPost: "11", portee: post.Portee,imagePath: "vide")
+          );
           BasicsWidgets.alertWithLottieAutoCloseToPrincipal(
               sec: 2,
               msg: "Post publié avec succès",

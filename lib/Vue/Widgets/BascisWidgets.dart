@@ -85,7 +85,7 @@ class BasicsWidgets {
     Timer(
       Duration(seconds: sec),
       () async {
-        User user = await SaveUser.getUser();
+        UserM user = await SaveUser.getUser();
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(

@@ -59,7 +59,9 @@ class _ContactPersoViewState extends State<ContactPersoView> {
                 Padding(
                   padding: const EdgeInsets.all(5.0),
                   child: Text(
-                    "Membre ${widget.superUser.type!="Honneur"?widget.superUser.type:"d'"+widget.superUser.type}",
+                      "Membre ${widget.superUser.type!="Honneur"?widget.superUser.type!="Effectif"?widget.superUser.type!="Adherent"?widget.superUser.type:"adhérent":"effectif":"d'honneur"}",
+
+                    // "Membre ${widget.superUser.type!="Honneur"?widget.superUser.type:"d'"+widget.superUser.type}",
                     style: GoogleFonts.nunito(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -180,7 +182,7 @@ class _ContactPersoViewState extends State<ContactPersoView> {
             Text(
               "${type} : ",
               style: GoogleFonts.nunito(
-                fontSize: 16,
+                fontSize: width*.035,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -188,7 +190,7 @@ class _ContactPersoViewState extends State<ContactPersoView> {
               "${value}",
               maxLines: 3,
               style: GoogleFonts.nunito(
-                fontSize: 16,
+                fontSize: width*.035,
                 fontWeight: FontWeight.bold,
               ),
             ),

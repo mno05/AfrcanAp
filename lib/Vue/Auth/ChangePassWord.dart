@@ -165,36 +165,36 @@ class _ChangePassWordState extends State<ChangePassWord> {
                     ],
                   ),
                   SizedBox(height: h / 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: h / 15,
-                        width: w / 3,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.black54,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                            child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 40,
-                              child: Image.asset("img/google_logo.webp"),
-                            ),
-                            Text("Google"),
-                          ],
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: h / 45),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     Container(
+                  //       height: h / 15,
+                  //       width: w / 3,
+                  //       decoration: BoxDecoration(
+                  //         border: Border.all(
+                  //           width: 1,
+                  //           color: Colors.black54,
+                  //         ),
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: Center(
+                  //           child: Row(
+                  //         crossAxisAlignment: CrossAxisAlignment.center,
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: [
+                  //           Container(
+                  //             height: 40,
+                  //             width: 40,
+                  //             child: Image.asset("img/google_logo.webp"),
+                  //           ),
+                  //           Text("Google"),
+                  //         ],
+                  //       )),
+                  //     ),
+                  //   ],
+                  // ),
+                  // SizedBox(height: h / 45),
                 ],
               ),
             ),

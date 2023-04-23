@@ -7,7 +7,7 @@ import 'package:african_ap/Models/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SaveUser {
-  static Sauvegarde({required User user}) async {
+  static Sauvegarde({required UserM user}) async {
     log("In Sauvegerde");
     SharedPreferences sh = await SharedPreferences.getInstance();
     bool verif= await sh.setStringList("userLamda", [
@@ -23,17 +23,16 @@ class SaveUser {
       log("Sauvegarde reussie");
     }else{
       log("Sauvegarde echoué");
-      
     }
   }
 
-  static Future<User> getUser() async {
+  static Future<UserM> getUser() async {
     SharedPreferences sh = await SharedPreferences.getInstance();
 
     SuperUser su = await SaveSuperUser.getSuperUser();
 
     if(sh.getStringList("userLamda")!=null){
-    return User(
+    return UserM(
         Id: sh.getStringList("userLamda")![0],
         prenom: sh.getStringList("userLamda")![1],
         nom: sh.getStringList("userLamda")![2],
@@ -44,7 +43,7 @@ class SaveUser {
         isLambda: su.nom.isEmpty,
         imageData: File(""));
     }else{
-      return User(prenom: 'nulo', nom: '', telephone: '', email: '', passw: '', imageName: '', imageData: File(''));
+      return UserM(prenom: 'nulo', nom: '', telephone: '', email: '', passw: '', imageName: '', imageData: File(''));
     }
   }
   static SupprimerUser() async{
