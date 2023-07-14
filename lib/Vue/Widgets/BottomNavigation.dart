@@ -1,27 +1,22 @@
-import 'dart:io';
-
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveSuperUser.dart';
-import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Data/User.dart';
+import 'package:african_ap/Data/Instantane.dart';
 import 'package:african_ap/Models/SuperUser.dart';
-import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
-import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Contacts.dart';
-import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/LocalApp/Messagerie.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class BottomNavigation extends StatelessWidget {
   final bool isMessage;
   final bool isHome;
   final bool isSearch;
-  const BottomNavigation({
+  BottomNavigation({
     super.key,
     this.isMessage = false,
     this.isHome = false,
@@ -59,9 +54,9 @@ class BottomNavigation extends StatelessWidget {
                 )
               : IconButton(
                   onPressed: () {
-                    SaveUser.getUser().then((value) {
-                      if (value.isLambda) {
-                        BasicsWidgets.YesOrNoDialogue(
+                    UserM us = Instantane.getUser();
+                    if (us.isLambda) {
+                      BasicsWidgets.YesOrNoDialogue(
                           context: context,
                           msg:
                               "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
@@ -70,23 +65,10 @@ class BottomNavigation extends StatelessWidget {
                           NonPressed: () {
                             Navigator.pop(context);
                           },
-                          YesPressed: () =>
-                              Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Adhesion(),
-                          )),
-                        );
-                      } else {
-                        SaveSuperUser.getSuperUser().then((value) {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Messagerie(
-                                  superUser: value,
-                                ),
-                              ));
-                        });
-                      }
-                    });
+                          YesPressed: () => Get.to(() => Adhesion()));
+                    } else {
+                      Get.to(() => Messagerie(superUser: us,));
+                    }
                   },
                   icon: Icon(
                     // CupertinoIcons.ellipses_bubble_fill,
@@ -118,11 +100,11 @@ class BottomNavigation extends StatelessWidget {
                 )
               : IconButton(
                   onPressed: () async {
-                    UserM user = await SaveUser.getUser();
+                    // UserM user = await SaveUser.getUser();
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Principal(user: user),
+                          builder: (context) => Principal(),
                         ));
                   },
                   icon: Icon(
@@ -154,8 +136,8 @@ class BottomNavigation extends StatelessWidget {
                 )
               : IconButton(
                   onPressed: () {
-                    SaveUser.getUser().then((value) {
-                      if (value.isLambda) {
+                    SaveSuperUser.getSuperUser().then((us) {
+                      if (us.isLambda) {
                         BasicsWidgets.YesOrNoDialogue(
                             context: context,
                             msg:
@@ -165,19 +147,13 @@ class BottomNavigation extends StatelessWidget {
                             NonPressed: () {
                               Navigator.pop(context);
                             },
-                            YesPressed: () =>
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => Adhesion(),
-                                )));
+                            YesPressed: () => Get.to(() => Adhesion()));
+
+                        // Navigator.of(context).push(MaterialPageRoute(
+                        //   builder: (context) => Adhesion(),
+                        // )));
                       } else {
-                        SaveSuperUser.getSuperUser().then((value) {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    Contacts(superUser: value),
-                              ));
-                        });
+                        Get.to(() => Contacts(superUser: us));
                       }
                     });
                   },

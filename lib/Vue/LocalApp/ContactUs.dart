@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
-import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactUs extends StatefulWidget {
   const ContactUs({super.key});
@@ -15,7 +13,7 @@ class ContactUs extends StatefulWidget {
 }
 
 class _ContactUsState extends State<ContactUs> {
-  TextEditingController Legende = TextEditingController();
+  TextEditingController legende = TextEditingController();
   @override
   Widget build(BuildContext context) {
     double h = Media.height(context);
@@ -56,7 +54,7 @@ class _ContactUsState extends State<ContactUs> {
                     fontWeight: FontWeight.bold,
                   ),
                   keyboardType: TextInputType.multiline,
-                  controller: Legende,
+                  controller: legende,
                   maxLines: null,
                   decoration: InputDecoration(
                     hintText: "Ecrivez nous",
@@ -70,21 +68,40 @@ class _ContactUsState extends State<ContactUs> {
               ),
               SizedBox(height: h * .08),
               ElevatedButton(
-                  onPressed: () {
-                    BasicsWidgets.Load(context);
-                    Timer(
-                      Duration(seconds: 3),
-                      () {
-                        Navigator.pop(context);
-                        Toast.show("Message envoyer");
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                  child: Text("Envoyer"),
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(AppData.BasicColor)))
+                onPressed: ()
+                    // BasicsWidgets.Load(context);
+                    async {
+                  final Uri _emailLaunchUri = Uri(
+                      scheme: 'mailto',
+                      path: 'ndjadim@gmail.com',
+                      queryParameters: {
+                        'subject': 'Contact via l\'application mobile',
+                        'body': legende.text
+                      });
+
+                  // String url = _emailLaunchUri.toString();
+
+                  if (await canLaunchUrl(_emailLaunchUri)) {
+                    await launchUrl(_emailLaunchUri);
+                  } else {
+                    // throw 'Could not launch $url';
+                  }
+
+                  // Timer(
+                  //   Duration(seconds: 3),
+                  //   () {
+                  //     Navigator.pop(context);
+                  //     Toast.show("Message envoyer");
+                  //     Navigator.pop(context);
+                  //   },
+                  // );
+                },
+                child: Text("Envoyer"),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(AppData.BasicColor),
+                ),
+              ),
             ],
           ),
         ),

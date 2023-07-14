@@ -5,7 +5,7 @@ import 'package:african_ap/Controllers/PostController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/Post.dart';
 import 'package:african_ap/Models/SuperUser.dart';
-import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Models/User2.dart';
 import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:african_ap/Vue/Widgets/VideoPlayer.dart';
@@ -16,7 +16,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
 class PostModif extends StatefulWidget {
-  final SuperUser superUser;
+  final UserM superUser;
   final Post post;
   const PostModif({
     super.key,
@@ -85,7 +85,7 @@ class _PostModifState extends State<PostModif> {
                       leading: CircleAvatar(
                         radius: 25,
                         backgroundImage:
-                            NetworkImage(widget.superUser.imagePath),
+                            NetworkImage(widget.superUser.imagePath!),
                       ),
                       title: Text(
                         "${widget.superUser.prenom} ${widget.superUser.nom}",
@@ -196,7 +196,7 @@ class _PostModifState extends State<PostModif> {
                                                       Navigator.pop(context);
                                                       setState(() {
                                                         Portee = widget
-                                                            .superUser.type;
+                                                            .superUser.type!;
                                                       });
                                                     },
                                                     child: Column(
@@ -213,7 +213,7 @@ class _PostModifState extends State<PostModif> {
                                                           ),
                                                         ),
                                                         Text(
-                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type != "Honneur" ? widget.superUser.type : "d'" + widget.superUser.type}s seulement les autres ne veront pas celà",
+                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type != "Honneur" ? widget.superUser.type : "d'" + widget.superUser.type!}s seulement les autres ne veront pas celà",
                                                             style: GoogleFonts
                                                                 .nunito(
                                                               fontWeight:
@@ -431,7 +431,7 @@ class _PostModifState extends State<PostModif> {
                               context,
                               Post(
                                 idPost: widget.post.idPost,
-                                idUser: widget.superUser.idSuper!,
+                                idUser: widget.superUser.Uid!,
 
                                 Legende: Legende.text,
                                 Portee:
@@ -440,7 +440,7 @@ class _PostModifState extends State<PostModif> {
                                     ? "Photo"
                                     : VideoIsSelectionned
                                         ? "Video"
-                                        : "Text",
+                                        : widget.post.type,
                                 PathContenu: imgName,
                                 fileData: img,
                               ),

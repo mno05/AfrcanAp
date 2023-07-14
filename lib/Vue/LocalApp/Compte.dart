@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveSuperUser.dart';
-import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Data/Instantane.dart';
+import 'package:african_ap/Data/User.dart';
 import 'package:african_ap/Models/SuperUser.dart';
+import 'package:african_ap/Services/Auth.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
-import 'package:african_ap/Vue/Auth/LoginVue.dart';
+import 'package:african_ap/Vue/LocalApp/ProfileModif.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
+import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class Compte extends StatefulWidget {
   const Compte({super.key});
@@ -18,14 +21,15 @@ class Compte extends StatefulWidget {
 }
 
 class _CompteState extends State<Compte> {
-  SuperUser? su;
+  UserM? su;
   @override
   void initState() {
-    SaveSuperUser.getSuperUser().then((value) {
-      setState(() {
-        su = value;
-      });
-    });
+    // SaveSuperUser.getSuperUser().then((value) {
+    //   setState(() {
+    //     su = value;
+    //   });
+    // });
+    su = Instantane.getUser();
     super.initState();
   }
 
@@ -66,7 +70,7 @@ class _CompteState extends State<Compte> {
                       padding: EdgeInsets.only(left: w * 0.14),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(su!.imagePath),
+                          backgroundImage: NetworkImage(su!.imagePath!),
                           radius: h * 0.04,
                         ),
                         title: Text(
@@ -97,11 +101,24 @@ class _CompteState extends State<Compte> {
                           color: Colors.black45,
                         ),
                       ),
-                      child: Center(
-                          child: Text(
-                        "Voir le profil",
-                        style: TextStyle(color: AppData.BasicColor),
-                      )),
+                      child: InkWell(
+                        onTap: () {
+                          SaveSuperUser.getSuperUser().then((value) {
+                            if (value.isLambda) {
+                              ChangePage.Push(context: context, push: ProfileModif(user: value));
+                            } else {
+                              SaveSuperUser.getSuperUser().then((value) {
+                                ChangePage.Push(context: context, push: ProfileModif(superUser: value,));
+                              });
+                            }
+                          });
+                        },
+                        child: Center(
+                            child: Text(
+                          "Voir le profil",
+                          style: TextStyle(color: AppData.BasicColor),
+                        )),
+                      ),
                     ),
                     SizedBox(height: 15),
                     Container(
@@ -188,12 +205,12 @@ class _CompteState extends State<Compte> {
         child: ElevatedButton(
           onPressed: () {
              BasicsWidgets.Load(context);
-                  Timer(Duration(seconds: 3), (() {
-                    SaveUser.SupprimerUser();
+                  BasicsWidgets.Load(context);
+                  Timer(Duration(seconds: 3), (()async {
+                    Navigator.pop(context);
                     SaveSuperUser.Supprimer();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => LoginVue(),
-                    ));
+                    await removeKey(AppData.userPref);
+                    AuthServices().Logout(context);
                   }));
           },
           child: Text("Déconnexion"),

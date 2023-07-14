@@ -1,9 +1,6 @@
-import 'dart:isolate';
 
-import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TxtFc extends StatefulWidget {
   final String hintText;

@@ -1,13 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:african_ap/Controllers/PostController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/Post.dart';
 import 'package:african_ap/Models/SuperUser.dart';
-import 'package:african_ap/Models/User.dart';
-import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
-import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
 class PostVue extends StatefulWidget {
-  final SuperUser superUser;
+  final UserM superUser;
   const PostVue({super.key, required this.superUser});
 
   @override
@@ -70,7 +66,7 @@ class _PostVueState extends State<PostVue> {
                       leading: CircleAvatar(
                         radius: 25,
                         backgroundImage:
-                            NetworkImage(widget.superUser.imagePath),
+                            NetworkImage(widget.superUser.imagePath!),
                       ),
                       title: Text(
                         "${widget.superUser.prenom} ${widget.superUser.nom}",
@@ -181,7 +177,7 @@ class _PostVueState extends State<PostVue> {
                                                       Navigator.pop(context);
                                                       setState(() {
                                                         Portee = widget
-                                                            .superUser.type;
+                                                            .superUser.type!;
                                                       });
                                                     },
                                                     child: Column(
@@ -198,7 +194,7 @@ class _PostVueState extends State<PostVue> {
                                                           ),
                                                         ),
                                                         Text(
-                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type != "Honneur" ? widget.superUser.type : "d'" + widget.superUser.type}s seulement les autres ne veront pas celà",
+                                                            "Le poste sera visible pour tous les membres ${widget.superUser.type != "Honneur" ? widget.superUser.type : "d'" + widget.superUser.type!}s seulement les autres ne veront pas celà",
                                                             style: GoogleFonts
                                                                 .nunito(
                                                               fontWeight:
@@ -401,7 +397,8 @@ class _PostVueState extends State<PostVue> {
                             PostController.Publier(
                               context,
                               Post(
-                                idUser: widget.superUser.idSuper!,
+                                userType: widget.superUser.type,
+                                idUser: widget.superUser.Uid!,
                                 Legende: Legende.text,
                                 Portee:
                                     Portee == "Tout le monde" ? "Tout" : Portee,
@@ -412,6 +409,9 @@ class _PostVueState extends State<PostVue> {
                                         : "Text",
                                 PathContenu: imgName,
                                 fileData: img,
+                                userNom: widget.superUser.nom,
+                                userPathProfile: widget.superUser.imagePath,
+                                userPrenom: widget.superUser.prenom,
                               ),
                               widget.superUser.prenom,
                               widget.superUser.nom,

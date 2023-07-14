@@ -6,7 +6,8 @@ import 'package:african_ap/Controllers/UpdateController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/Message.dart';
 import 'package:african_ap/Models/SuperUser.dart';
-import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Models/User2.dart';
+import 'package:african_ap/Services/dbServices.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/Message.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
@@ -18,7 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:toast/toast.dart';
 
 class ProfileModif extends StatefulWidget {
-  final SuperUser? superUser;
+  final UserM? superUser;
   final UserM? user;
 
   const ProfileModif({
@@ -131,7 +132,7 @@ class _ProfileModifState extends State<ProfileModif> {
                         children: [
                           Padding(
                               padding: const EdgeInsets.all(5.0),
-                              child: ImageProfil(widget.superUser!.imagePath)),
+                              child: ImageProfil(widget.superUser!.imagePath!)),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 2.0),
                             child: Row(
@@ -167,7 +168,7 @@ class _ProfileModifState extends State<ProfileModif> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Membre ${widget.superUser!.type != "Honneur" ? widget.superUser!.type : "d'" + widget.superUser!.type}",
+                                  "Membre ${widget.superUser!.type != "Honneur" ? widget.superUser!.type : "d'" + widget.superUser!.type!}",
                                   style: GoogleFonts.nunito(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -239,9 +240,12 @@ class _ProfileModifState extends State<ProfileModif> {
                             child: ButtonC(
                               text: "Valider",
                               onPressed: () {
-                                UpdateController.UpdateSuperUser(
-                                    context: context,
-                                    superUser: SuperUser(
+                                // UpdateController.UpdateSuperUser(
+                                //     context: context,
+                                //     superUser:
+                                UserM su = (_imageFile != null)
+                                    ? UserM(
+                                      Uid: widget.superUser!.Uid,
                                         prenom: prenom.text,
                                         nom: nom.text,
                                         paysOrgine: paysOrgine.text,
@@ -252,15 +256,30 @@ class _ProfileModifState extends State<ProfileModif> {
                                         telephone: " ",
                                         adresseMail:
                                             widget.superUser!.adresseMail,
-                                        type: " ",
                                         statutpro: statutpro.text,
-                                        autreStatut: " ",
                                         fonction: fonction.text,
                                         domainesExpertise:
                                             domainesExpertise.text,
-                                        imagePath: " "),
-                                    imageData: img,
-                                    imageName: imgName);
+                                        imageData: img,
+                                        isLambda: false)
+                                    : UserM(
+                                        Uid: widget.superUser!.Uid,
+                                        prenom: prenom.text,
+                                        nom: nom.text,
+                                        paysOrgine: paysOrgine.text,
+                                        adresse: adresse.text,
+                                        codePostal: codePostal.text,
+                                        localite: Localite.text,
+                                        pays: pays.text,
+                                        telephone: " ",
+                                        adresseMail:
+                                            widget.superUser!.adresseMail,
+                                        statutpro: statutpro.text,
+                                        fonction: fonction.text,
+                                        domainesExpertise:
+                                            domainesExpertise.text,
+                                        isLambda: false);
+                                dbServices().UpdateUserMProfile(context,su);
                               },
                             ),
                           )
@@ -273,7 +292,7 @@ class _ProfileModifState extends State<ProfileModif> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           // crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            ImageProfil(widget.user!.imageName),
+                            ImageProfil(widget.user!.imagePath!),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2.0),
                               child: Row(
@@ -322,7 +341,7 @@ class _ProfileModifState extends State<ProfileModif> {
                             Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: Text(
-                                "${widget.user!.email}",
+                                "${widget.user!.adresseMail}",
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),

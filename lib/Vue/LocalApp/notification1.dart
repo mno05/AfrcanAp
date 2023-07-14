@@ -1,20 +1,18 @@
+import 'dart:async';
 import 'dart:developer';
-
+import 'package:african_ap/GetXControllers/NotificationController.dart';
 import 'package:african_ap/Controllers/NotificationController.dart';
 import 'package:african_ap/Models/Notifiacation.dart';
 import 'package:african_ap/Tools/DateDifference.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class Notification1 extends StatefulWidget {
-  final String Portee;
-  final String imagePathUser;
-
   const Notification1({
     super.key,
-    required this.Portee,
-    required this.imagePathUser,
   });
 
   @override
@@ -22,17 +20,21 @@ class Notification1 extends StatefulWidget {
 }
 
 class _Notification1State extends State<Notification1> {
-  List<NotificationM> notifs = [];
+  // List<NotificationM> notifs = [];
   bool get = false;
-  
+  NotificationXController nofc=Get.put(NotificationXController());
   @override
   void initState() {
-    NotificationController.Recuperer(widget.Portee).then((notif) {
-      setState(() {
-        notifs = notif!;
-        get = true;
-      });
-    });
+    Timer(
+      Duration(seconds: 15),
+      () {
+        if (nofc.listNotificatons.length == 0) {
+          toastLong(
+              "Assurez vous d'avoir une bonne connexion internet ou soit vous n'avez pas des notifications");
+        }
+      },
+    );
+
     super.initState();
   }
 
@@ -40,13 +42,13 @@ class _Notification1State extends State<Notification1> {
   Widget build(BuildContext context) {
     double h = Media.height(context);
     double w = Media.width(context);
-    print("DFDFD" + notifs.length.toString());
+    // print("DFDFD" + notifs.length.toString());
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
-      body: Container(
+      body:Container(
         width: w,
         height: h,
-        child: !get
+        child: nofc.nbr==-1
             ? Center(
                 child: Center(
                   child: Container(
@@ -55,8 +57,17 @@ class _Notification1State extends State<Notification1> {
                   ),
                 ),
               )
-            : ListView.builder(
-                itemCount: notifs.length,
+            :nofc.nbr==0?Center(
+                child: Center(
+                  child: Container(
+                    width: w * .3,
+                    // child: Lottie.asset("assets/Load.json"),
+                    child: Text("Pase de notif"),
+                  ),
+                ),
+              ): 
+           Obx(()=> ListView.builder(
+                itemCount: nofc.listNotificatons.length,
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return Column(
@@ -87,8 +98,8 @@ class _Notification1State extends State<Notification1> {
                         NotificationContainer(
                           h: h,
                           w: w,
-                          imagePathUser: widget.imagePathUser,
-                          not: notifs.first,
+                          imagePathUser: nofc.listNotificatons[index].imagePath!,
+                          not: nofc.listNotificatons.first,
                         ),
                       ],
                     );
@@ -96,16 +107,15 @@ class _Notification1State extends State<Notification1> {
                     return NotificationContainer(
                       h: h,
                       w: w,
-                      imagePathUser: widget.imagePathUser,
-                      not: notifs[index],
+                      imagePathUser: nofc.listNotificatons[index].imagePath!,
+                      not: nofc.listNotificatons[index],
                     );
                   }
                 },
               ),
       ),
-    );
+    ));
   }
-
   Widget NotificationContainer({
     required double h,
     required double w,
@@ -119,7 +129,6 @@ class _Notification1State extends State<Notification1> {
         height: h / 8,
         width: w,
         child: ListTile(
-          
           leading: CircleAvatar(
             radius: h * .06,
             backgroundImage: NetworkImage(not.imagePath!),

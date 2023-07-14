@@ -1,18 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-import 'package:african_ap/Controllers/InscriptionController.dart';
-import 'package:african_ap/Controllers/LoginController.dart';
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Services/Auth.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
-import 'package:african_ap/Vue/Auth/RecupOTPInscrip.dart';
 import 'package:african_ap/Vue/Widgets/BoutonC.dart';
-import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
-import 'package:african_ap/Vue/Widgets/ChangePage.dart';
-import 'package:african_ap/Vue/Widgets/InscriptionTextField.dart';
 import 'package:african_ap/Vue/Widgets/TxtFC.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -160,15 +153,17 @@ class _InscriptionState extends State<Inscription> {
                                     //         imageData: img,
                                     //       ),
                                     //     ));
-                                    InscriptionController.UserInscription(context, UserM(
-                                            prenom: prenom.text,
-                                            nom: nom.text,
-                                            telephone: "Vide",
-                                            email: email.text,
-                                            passw: passw.text,
-                                            imageName: imgName,
-                                            imageData: img,
-                                          ),);
+                                    AuthServices().register(
+                                        context,
+                                        UserM(
+                                          prenom: prenom.text,
+                                          nom: nom.text,
+                                          adresseMail: email.text,
+                                          isLambda: true,
+                                          imagePath: imgName,
+                                          imageData: img,
+                                          passW: passw.text
+                                        ));
                                   } else {
                                     Toast.show(
                                       "Le mot de passe diffère sa confirmation",

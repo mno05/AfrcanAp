@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,7 +54,6 @@ class _VideoState extends State<Video> {
   @override
   Widget build(BuildContext context) {
     double h = Media.height(context);
-    double w = Media.width(context);
     return Container(
       height: h * 0.6,
       // width: ,

@@ -1,6 +1,6 @@
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
-import 'package:african_ap/Vue/Widgets/BoutonC.dart';
+// import 'package:african_ap/Vue/Widgets/BoutonC.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_slider/source/presentation/pages/pages.dart';

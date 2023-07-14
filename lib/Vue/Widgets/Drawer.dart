@@ -1,24 +1,21 @@
 import 'dart:async';
-
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveSuperUser.dart';
-import 'package:african_ap/Data/SaveUser.dart';
-import 'package:african_ap/Models/SuperUser.dart';
-import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Data/User.dart';
+import 'package:african_ap/Services/Auth.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/LoginVue.dart';
-import 'package:african_ap/Vue/LocalApp/AccountAccount01.dart';
 import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Apropos.dart';
 import 'package:african_ap/Vue/LocalApp/ContactUs.dart';
 import 'package:african_ap/Vue/LocalApp/Contacts.dart';
 import 'package:african_ap/Vue/LocalApp/Invitation.dart';
 import 'package:african_ap/Vue/LocalApp/Parametre.dart';
-import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/LocalApp/ProfileModif.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class DrawerC extends StatelessWidget {
   final String prenom;
@@ -72,12 +69,18 @@ class DrawerC extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          SaveUser.getUser().then((value) {
+                          SaveSuperUser.getSuperUser().then((value) {
                             if (value.isLambda) {
-                              ChangePage.Push(context: context, push: ProfileModif(user: value));
+                              ChangePage.Push(
+                                  context: context,
+                                  push: ProfileModif(user: value));
                             } else {
                               SaveSuperUser.getSuperUser().then((value) {
-                                ChangePage.Push(context: context, push: ProfileModif(superUser: value,));
+                                ChangePage.Push(
+                                    context: context,
+                                    push: ProfileModif(
+                                      superUser: value,
+                                    ));
                               });
                             }
                           });
@@ -195,29 +198,24 @@ class DrawerC extends StatelessWidget {
               ),
               ListTile(
                 onTap: () {
-                  SaveUser.getUser().then((value) {
-                    if (value.isLambda) {
+                  SaveSuperUser.getSuperUser().then((us) {
+                    if (us.isLambda) {
                       BasicsWidgets.YesOrNoDialogue(
                           context: context,
                           msg:
-                              "Vous ne pouvez pas rechercher les membres, veuillez adhérer la plateforme",
-                          YesText: "J'adhére",
+                              "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                          YesText: "J'adhère",
                           NoText: "Non merci",
                           NonPressed: () {
                             Navigator.pop(context);
                           },
-                          YesPressed: () =>
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => Adhesion(),
-                              )));
+                          YesPressed: () => Get.to(() => Adhesion()));
+
+                      // Navigator.of(context).push(MaterialPageRoute(
+                      //   builder: (context) => Adhesion(),
+                      // )));
                     } else {
-                      SaveSuperUser.getSuperUser().then((value) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Contacts(superUser: value),
-                            ));
-                      });
+                      Get.to(() => Contacts(superUser: us));
                     }
                   });
                 },
@@ -270,13 +268,20 @@ class DrawerC extends StatelessWidget {
               ListTile(
                 onTap: () {
                   BasicsWidgets.Load(context);
-                  Timer(Duration(seconds: 3), (() {
-                    SaveUser.SupprimerUser();
-                    SaveSuperUser.Supprimer();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => LoginVue(),
-                    ));
-                  }));
+                  Timer(
+                    Duration(seconds: 3),
+                    (() async {
+                      // SaveUser.SupprimerUser();
+                      // SaveSuperUser.Supprimer();
+                      // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      //   builder: (context) => LoginVue(),
+                      // ));
+                      Navigator.pop(context);
+                      SaveSuperUser.Supprimer();
+                      await removeKey(AppData.userPref);
+                      AuthServices().Logout(context);
+                    }),
+                  );
                 },
                 visualDensity: VisualDensity(horizontal: -4, vertical: -4),
                 minLeadingWidth: -4,

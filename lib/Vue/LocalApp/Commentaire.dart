@@ -1,15 +1,15 @@
-import 'dart:convert';
 import 'dart:developer';
-
-import 'package:african_ap/Controllers/CommentaireController.dart';
 import 'package:african_ap/Data/AppData.dart';
+import 'package:african_ap/GetXControllers/CommentareController.dart';
 import 'package:african_ap/Models/Commentaire.dart';
+import 'package:african_ap/Services/dbServices.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class CommentaireVue extends StatefulWidget {
   String PathContenu;
   String Legende;
@@ -56,72 +56,74 @@ class CommentaireVue extends StatefulWidget {
 
 class _CommentaireVueState extends State<CommentaireVue> {
   TextEditingController Cmt = TextEditingController();
-  List<Commentaire> cmts = [];
+  CommentaireXController cmc = Get.put(CommentaireXController());
+  // List<Commentaire> cmts = [];
   var dataCommentaires;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCommentaires(widget.idPost);
+    log(widget.idPost);
+    cmc.getAllCommentaires(id: widget.idPost);
   }
 
-  getCommentaires(idPost) async {
-    // log("Here");
-    final response = await http.post(
-        Uri.parse("https://myap.moglich.net/api/recupCommentaire.php/"),
-        body: {
-          "idPost": idPost,
-        });
+  // getCommentaires(idPost) async {
+  //   // log("Here");
+  //   final response = await http.post(
+  //       Uri.parse("https://myap.moglich.net/api/recupCommentaire.php/"),
+  //       body: {
+  //         "idPost": idPost,
+  //       });
 
-    if (response.statusCode == 200) {
-      setState(() {
-        dataCommentaires = json.decode(response.body);
-        for (var i = 0; i < dataCommentaires.length; i++) {
-          int year = int.parse(
-              dataCommentaires[i]["date"].toString().split("-").first);
-          int month =
-              int.parse(dataCommentaires[i]["date"].toString().split("-")[1]);
-          int day = int.parse(dataCommentaires[i]["date"]
-              .toString()
-              .split("-")
-              .last
-              .split(" ")
-              .first);
-          String hour = dataCommentaires[i]["date"]
-              .toString()
-              .split("-")
-              .last
-              .split(" ")
-              .last
-              .split(":")
-              .first;
-          String minute = dataCommentaires[i]["date"]
-              .toString()
-              .split("-")
-              .last
-              .split(" ")
-              .last
-              .split(":")[1];
+  //   if (response.statusCode == 200) {
+  //     setState(() {
+  //       dataCommentaires = json.decode(response.body);
+  //       for (var i = 0; i < dataCommentaires.length; i++) {
+  //         int year = int.parse(
+  //             dataCommentaires[i]["date"].toString().split("-").first);
+  //         int month =
+  //             int.parse(dataCommentaires[i]["date"].toString().split("-")[1]);
+  //         int day = int.parse(dataCommentaires[i]["date"]
+  //             .toString()
+  //             .split("-")
+  //             .last
+  //             .split(" ")
+  //             .first);
+  //         String hour = dataCommentaires[i]["date"]
+  //             .toString()
+  //             .split("-")
+  //             .last
+  //             .split(" ")
+  //             .last
+  //             .split(":")
+  //             .first;
+  //         String minute = dataCommentaires[i]["date"]
+  //             .toString()
+  //             .split("-")
+  //             .last
+  //             .split(" ")
+  //             .last
+  //             .split(":")[1];
 
-          cmts.add(
-            Commentaire(
-              imagePath: dataCommentaires[i]["imagePath"],
-              nom: dataCommentaires[i]["nom"],
-              prenom: dataCommentaires[i]["prenom"],
-              idUser: widget.idUser,
-              idPost: idPost,
-              contenu: dataCommentaires[i]["contenu"],
-              date: DateTime(year, month, day),
-            ),
-            // ),
-          );
-        }
-        // flagAsync = false;
-        // flagAsyncSend = false;
-      });
-    }
-  }
+  //         cmts.add(
+  //           Commentaire(
+  //             imagePath: dataCommentaires[i]["imagePath"],
+  //             nom: dataCommentaires[i]["nom"],
+  //             prenom: dataCommentaires[i]["prenom"],
+  //             idUser: widget.idUser,
+  //             idPost: idPost,
+  //             contenu: dataCommentaires[i]["contenu"],
+  //             date: DateTime(year, month, day),
+  //           ),
+  //           // ),
+  //         );
+  //       }
+  //       // flagAsync = false;
+  //       // flagAsyncSend = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -133,85 +135,90 @@ class _CommentaireVueState extends State<CommentaireVue> {
         title: Text("Commentaire"),
         backgroundColor: AppData.BasicColor,
       ),
-      body: Padding(
-        padding: EdgeInsets.only(
-          bottom: h * .08,
-        ),
-        child: SingleChildScrollView(
-          child: Container(
-            height: h,
-            width: w,
-            child: Flex(
-              direction: Axis.vertical,
-              children: [
-                ExcludeSemantics(
-                    // flex: 4,
-                    child: Column(
-                  children: [
-                    PostContainer(
-                        Portee: widget.Portee,
-                        UserType: widget.UserType,
-                        idPost: widget.idPost,
-                        idProprioPost: widget.idProprioPost,
-                        idUserClick: widget.idUser,
-                        datePost: widget.datePost,
-                        Legende: widget.Legende,
-                        PathContenu: widget.PathContenu,
-                        Prenom: widget.Prenom,
-                        Nom: widget.Nom,
-                        PathProfile: widget.PathProfile,
-                        TypeContenue: widget.TypeContenue,
-                        onJaimeTap: () {},
-                        CommentTap: () {},
-                        nbrAime: widget.nbrAime,
-                        isLike: widget.isLike),
-                  ],
-                )),
-                Expanded(
-                  child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      // scrollDirection: Axis,
-                      // reverse: true,
-                      itemCount: cmts.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(cmts[index].imagePath),
-                              // radius: 10,
-                            ),
-                            title: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: (Colors.blue[200]),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${cmts[index].prenom} ${cmts[index].nom}',
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+      body: Obx(
+        () => Padding(
+          padding: EdgeInsets.only(
+            bottom: h * .08,
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+              height: h,
+              width: w,
+              child: Flex(
+                direction: Axis.vertical,
+                children: [
+                  ExcludeSemantics(
+                      // flex: 4,
+                      child: Column(
+                    children: [
+                      PostContainer(
+                          Portee: widget.Portee,
+                          UserType: widget.UserType,
+                          idPost: widget.idPost,
+                          idProprioPost: widget.idProprioPost,
+                          idUserClick: widget.idUser,
+                          datePost: widget.datePost,
+                          Legende: widget.Legende,
+                          PathContenu: widget.PathContenu,
+                          Prenom: widget.Prenom,
+                          Nom: widget.Nom,
+                          PathProfile: widget.PathProfile,
+                          TypeContenue: widget.TypeContenue,
+                          onJaimeTap: () {},
+                          CommentTap: () {},
+                          nbrAime: widget.nbrAime,
+                          isLike: widget.isLike),
+                    ],
+                  )),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: h*0.03),
+                      child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          // scrollDirection: Axis,
+                          // reverse: true,
+                          itemCount: cmc.listCommentaires.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      cmc.listCommentaires[index].imagePath),
+                                  // radius: 10,
+                                ),
+                                title: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: (Colors.blue[200]),
                                   ),
-                                  Text(
-                                    '${cmts[index].contenu}',
-                                    style: GoogleFonts.nunito(fontSize: 15),
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${cmc.listCommentaires[index].prenom} ${cmc.listCommentaires[index].nom}',
+                                        style: GoogleFonts.nunito(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${cmc.listCommentaires[index].contenu}',
+                                        style: GoogleFonts.nunito(fontSize: 15),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                            );
+                          }
+                          // },
                           ),
-                        );
-                      }
-                      // },
-                      ),
-                ),
-              ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -264,19 +271,20 @@ class _CommentaireVueState extends State<CommentaireVue> {
                 onTap: () async {
                   if (Cmt.text.isEmpty) {
                   } else {
-                    CommentaireController.Commenter(
-                        widget.idUser, widget.idPost, Cmt.text);
-                    setState(() {
-                      cmts.add(Commentaire(
-                          idUser: widget.idUser,
-                          idPost: widget.idPost,
-                          imagePath: widget.UsProfilPath,
-                          nom: widget.UsNom,
-                          prenom: widget.UsPrenom,
-                          contenu: Cmt.text,
-                          date: DateTime.now()));
-                      Cmt.text = "";
-                    });
+                    // CommentaireController.Commenter(
+                    //     widget.idUser, widget.idPost, Cmt.text);
+                    Commentaire cmmt = Commentaire(
+                        idCommentaire: widget.idPost,
+                        idUser: widget.idUser,
+                        idPost: widget.idPost,
+                        imagePath: widget.UsProfilPath,
+                        nom: widget.UsNom,
+                        prenom: widget.UsPrenom,
+                        contenu: Cmt.text,
+                        date: DateTime.now());
+                    cmc.listCommentaires.add(cmmt);
+                    await dbServices().commenter(cmmt);
+                    Cmt.text = "";
                   }
                 }),
           ],

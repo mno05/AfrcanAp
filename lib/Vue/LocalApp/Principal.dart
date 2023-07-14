@@ -1,124 +1,370 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveSuperUser.dart';
-import 'package:african_ap/Data/SaveUser.dart';
+import 'dart:io';
+import 'package:african_ap/Data/User.dart';
+import 'package:african_ap/Data/Instantane.dart';
+import 'package:african_ap/GetXControllers/MessageController.dart';
+import 'package:african_ap/GetXControllers/PostContoller.dart';
+import 'package:african_ap/GetXControllers/PostEnHContoller.dart';
+import 'package:african_ap/Models/Post.dart';
 import 'package:african_ap/Models/SuperUser.dart';
-import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Services/dbServices.dart';
 import 'package:african_ap/Tools/DateDifference.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
-import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Commentaire.dart';
-import 'package:african_ap/Vue/LocalApp/Message.dart';
-import 'package:african_ap/Vue/LocalApp/Messagerie.dart';
 import 'package:african_ap/Vue/LocalApp/PostVue.dart';
 import 'package:african_ap/Vue/LocalApp/notification1.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BottomNavigation.dart';
-import 'package:african_ap/Vue/Widgets/ChangePage.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:african_ap/Vue/Widgets/Drawer.dart';
 import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class Principal extends StatefulWidget {
-  UserM user;
-  // SuperUser? superUser;
   Principal({
     super.key,
-    required this.user,
-    // this.superUser,
   });
-
   @override
   State<Principal> createState() => _PrincipalState();
 }
 
 class _PrincipalState extends State<Principal> {
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
+  PostXcontroller postc = Get.put(PostXcontroller());
+  PostenHXcontroller postenHc = Get.put(PostenHXcontroller());
+  MessageXController msgc = Get.put(MessageXController());
 
+  late UserM user;
+  // @override
+  // void setState(fn) {
+  //   if (mounted) {
+  //     super.setState(fn);
+  //   }
+  // }
 
-  var data;
-  Map<String, String> nbrAime = {};
-  int nbr = 0;
-  bool get = false;
+  List<Post> listPosts = [];
+  // Map<String, String> nbrAime = {};
+  // int nbr = 0;
+  // bool get = false;
+  bool getUser = false;
+
   String typeUser = "";
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    SaveUser.getUser().then((value) {
-      if (value.isLambda) {
-        typeUser = "Tout";
-      } else {
-        SaveSuperUser.getSuperUser().then((value) {
-          typeUser = value.type;
-        });
-      }
-      getPosts(typeUser);
-    });
-    // then((value1) => getNbrAimes(value1).then((value) => nbrAime[value1]=value));
-  }
-
-  // Future<List<String>>
-  getPosts(type) async {
-    final response = await http.post(
-      Uri.parse("https://myap.moglich.net/api/recupPosts.php/"),
-      body: {'portee': type},
-    );
-    if (response.statusCode == 200) {
+    user = Instantane.getUser();
+    postc.getPosts().then((value) {
       setState(() {
-        data = json.decode(response.body);
-        
-        get = true;
+        listPosts = value;
       });
-      // return data[""]["idUser"];
-    }
-
-    // log(' Resultat : ${data}');
-  }
-
-  Future getNbrAimes(idPost) async {
-    final response = await http.post(
-        Uri.parse("https://myap.moglich.net/api/AimesNomber.php/"),
-        body: {
-          "IdPost": idPost,
-          "IdUser": widget.user.Id,
-        });
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    }
-  }
-
-  Future Aimer(idPost) async {
-    final response = await http
-        .post(Uri.parse("https://myap.moglich.net/api/Aimer.php/"), body: {
-      "IdPost": idPost,
-      "IdUser": widget.user.Id,
     });
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      if (data["data"][0] == "Aime") {
-        DesAimer(idPost);
-      }
-      return data;
-    }
+    postenHc.getPosts();
+
+    // postc.getPosts();
   }
 
-  Future DesAimer(idPost) async {
-    final response = await http
-        .post(Uri.parse("https://myap.moglich.net/api/DesAimer.php/"), body: {
-      "IdPost": idPost,
-      "IdUser": widget.user.Id,
-    });
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      return data;
-    }
+  @override
+  Widget build(BuildContext context) {
+    double h = Media.height(context);
+    double w = Media.width(context);
+    return Scaffold(
+      drawer: DrawerC(
+        prenom: user.prenom,
+        nom: user.nom,
+        pathImage: user.imagePath!,
+      ),
+      body: WillPopScope(
+        onWillPop: onWillPop,
+        child: Container(
+            color: Colors.grey.shade300,
+            height: h,
+            width: w,
+            child: RefreshIndicator(
+              onRefresh: () async {
+                postc.getPosts();
+                postenHc.getPosts();
+              },
+              child: Obx(
+                () => (postc.nbr.value == -1)
+                    ? Center(
+                        child: Container(
+                          width: w * .3,
+                          child: Lottie.asset("assets/Load.json"),
+                        ),
+                      )
+                    : Center(
+                        child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount: listPosts.length,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        top: h * 0.02,
+                                        bottom: h * 0.02,
+                                        left: w * 0.08),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundColor: Colors.grey,
+                                          backgroundImage: NetworkImage(
+                                            user.imagePath!,
+                                          ),
+                                          radius: h * 0.03,
+                                        ),
+                                        SizedBox(width: 10),
+                                        PostTF(),
+                                      ],
+                                    ),
+                                  ),
+                                  (postenHc.nbr < 0)
+                                      ? Container(
+                                          child: Container(),
+                                        )
+                                      : Container(
+                                          height:
+                                              (postenHc.nbr == 1) ? h / 2 : h,
+                                          child: ListView.builder(
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemCount: 2,
+                                            itemBuilder: (context, index) =>
+                                                PostEnHauteur(w, index),
+                                          ),
+                                        ),
+                                  Obx(
+                                    () => Container(
+                                      width: w,
+                                      child: PostContainer(
+                                        UserType: listPosts[index].userType!,
+                                        Portee: listPosts[index].Portee,
+                                        idPost: listPosts[index].idPost!,
+                                        idProprioPost: listPosts[index].idUser,
+                                        idUserClick: user.Uid!,
+                                        datePost: DateDifference
+                                            .dateFromServerToDateTime(
+                                                listPosts[index].date!),
+                                        CommentTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CommentaireVue(
+                                                  UserType: postc
+                                                      .listPosts[index]
+                                                      .userType!,
+                                                  Portee: postc
+                                                      .listPosts[index].Portee,
+                                                  idProprioPost: postc
+                                                      .listPosts[index].idUser,
+                                                  datePost: DateDifference
+                                                      .dateFromServerToDateTime(
+                                                          listPosts[index]
+                                                              .date!),
+                                                  UsPrenom: user.prenom,
+                                                  UsNom: user.nom,
+                                                  UsProfilPath: user.imagePath!,
+                                                  idPost: postc
+                                                      .listPosts[index].idPost!,
+                                                  idUser: user.Uid!,
+                                                  isLike: postc.isLicked[index],
+                                                  Legende: postc
+                                                      .listPosts[index]
+                                                      .Legende!,
+                                                  nbrAime: postc.nbrAime[index]
+                                                      .toString()
+                                                      .split("[")
+                                                      .first,
+                                                  Nom: postc.listPosts[index]
+                                                      .userNom!,
+                                                  Prenom: listPosts[index]
+                                                      .userPrenom!,
+                                                  PathContenu: postc
+                                                      .listPosts[index]
+                                                      .PathContenu!,
+                                                  PathProfile: postc
+                                                      .listPosts[index]
+                                                      .userPathProfile!,
+                                                  TypeContenue:
+                                                      listPosts[index].type,
+                                                ),
+                                              ));
+                                        },
+                                        onJaimeTap: () async {
+                                          await dbServices()
+                                              .actionLickOrDislick(
+                                                  listPosts[index].idPost!,
+                                                  index);
+                                        },
+                                        isLike: postc.isLicked[index],
+                                        Legende: listPosts[index].Legende,
+                                        nbrAime: postc.nbrAime[index]
+                                            .toString()
+                                            .split("[")
+                                            .first,
+                                        Nom: listPosts[index].userNom!,
+                                        Prenom: listPosts[index].userPrenom!,
+                                        PathContenu:
+                                            listPosts[index].PathContenu!,
+                                        PathProfile: postc
+                                            .listPosts[index].userPathProfile!,
+                                        TypeContenue: listPosts[index].type,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Obx(
+                                () => Container(
+                                  width: w,
+                                  child: PostContainer(
+                                      UserType: listPosts[index].userType!,
+                                      Portee: listPosts[index].Portee,
+                                      idPost: listPosts[index].idPost!,
+                                      idProprioPost: listPosts[index].idUser,
+                                      idUserClick: user.Uid!,
+                                      datePost: DateDifference
+                                          .dateFromServerToDateTime(
+                                              listPosts[index].date!),
+                                      CommentTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => CommentaireVue(
+                                                  UserType: postc
+                                                      .listPosts[index]
+                                                      .userType!,
+                                                  Portee: postc
+                                                      .listPosts[index].Portee,
+                                                  idProprioPost: postc
+                                                      .listPosts[index].idUser,
+                                                  datePost:
+                                                      DateDifference.dateFromServerToDateTime(
+                                                          listPosts[index]
+                                                              .date!),
+                                                  UsNom: user.nom,
+                                                  UsPrenom: user.prenom,
+                                                  UsProfilPath: user.imagePath!,
+                                                  idPost: postc
+                                                      .listPosts[index].idPost!,
+                                                  idUser: user.Uid!,
+                                                  isLike: postc.isLicked[index],
+                                                  Legende: postc
+                                                      .listPosts[index]
+                                                      .Legende!,
+                                                  nbrAime: postc.nbrAime[index]
+                                                      .toString()
+                                                      .split("[")
+                                                      .first,
+                                                  Nom:
+                                                      listPosts[index].userNom!,
+                                                  Prenom: listPosts[index]
+                                                      .userPrenom!,
+                                                  PathContenu: postc
+                                                      .listPosts[index]
+                                                      .PathContenu!,
+                                                  PathProfile: postc
+                                                      .listPosts[index]
+                                                      .userPathProfile!,
+                                                  TypeContenue:
+                                                      postc.listPosts[index].type),
+                                            ));
+                                      },
+                                      onJaimeTap: () async {
+                                        await dbServices().actionLickOrDislick(
+                                            listPosts[index].idPost!, index);
+                                      },
+                                      isLike: postc.isLicked[index],
+                                      Legende: listPosts[index].Legende,
+                                      nbrAime: postc.nbrAime[index].toString(),
+                                      // .split("[")
+                                      // .first,
+                                      Nom: listPosts[index].userNom!,
+                                      Prenom: listPosts[index].userPrenom!,
+                                      PathContenu:
+                                          listPosts[index].PathContenu!,
+                                      PathProfile: postc
+                                          .listPosts[index].userPathProfile!,
+                                      TypeContenue: listPosts[index].type),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+              ),
+            )),
+      ),
+      bottomNavigationBar: BottomNavigation(isHome: true),
+      appBar: AppBar(
+        backgroundColor: Color(0xffEB7D30),
+        actions: [
+          ActionContainer(
+            Icons.message,
+            tap: () {
+              SaveSuperUser.getSuperUser().then((us) {
+                if (us.isLambda) {
+                  BasicsWidgets.YesOrNoDialogue(
+                      context: context,
+                      msg:
+                          "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                      YesText: "J'adhère",
+                      NoText: "Non merci",
+                      NonPressed: () {
+                        Navigator.pop(context);
+                      },
+                      YesPressed: () => Get.to(() => Adhesion()));
+
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //   builder: (context) => Adhesion(),
+                  // )));
+                } else {
+                  Get.to(() => Principal());
+                }
+              });
+            },
+          ),
+          ActionContainer(
+            Icons.notifications,
+            tap: () {
+              // Notifications.showNigTextNotification(
+              //     title: "Hi",
+              //     body: "Hello Word",
+              //     fln: flutterLocalNotificationsPlugin);
+              SaveSuperUser.getSuperUser().then((us) {
+                if (us.isLambda) {
+                  BasicsWidgets.YesOrNoDialogue(
+                      context: context,
+                      msg:
+                          "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                      YesText: "J'adhère",
+                      NoText: "Non merci",
+                      NonPressed: () {
+                        Navigator.pop(context);
+                      },
+                      YesPressed: () => Get.to(() => Adhesion()));
+
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //   builder: (context) => Adhesion(),
+                  // )));
+                } else {
+                  Get.to(() => Notification1());
+                }
+              });
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget ActionContainer(IconData icon, {required void Function()? tap}) {
@@ -154,346 +400,110 @@ class _PrincipalState extends State<Principal> {
           child: Center(child: Text("Commencer un post")),
         ),
         onTap: () {
-          SaveUser.getUser().then((value) {
-            if (value.isLambda) {
+          SaveSuperUser.getSuperUser().then((us) {
+            if (us.isLambda) {
               BasicsWidgets.YesOrNoDialogue(
-                context: context,
-                msg:
-                    "Vous ne pouvez pas poster, veuillez adhérer la plateforme pour celà.",
-                YesText: "J'adhére",
-                NoText: "Non merci",
-                NonPressed: () {
-                  Navigator.pop(context);
-                },
-                YesPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Adhesion(),
-                )),
-              );
+                  context: context,
+                  msg:
+                      "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
+                  YesText: "J'adhère",
+                  NoText: "Non merci",
+                  NonPressed: () {
+                    Navigator.pop(context);
+                  },
+                  YesPressed: () => Get.to(() => Adhesion()));
             } else {
-              SaveSuperUser.getSuperUser().then((value) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PostVue(
-                        superUser: value,
-                      ),
-                    ));
-              });
+              Get.to(() => PostVue(superUser: us));
             }
           });
         });
   }
 
-
-
-
-
-
-
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    getPosts(typeUser);
-
-    // log(data.toString());
-    // getNbrAimes("25");
-    Aimer("29");
-    double h = Media.height(context);
-    double w = Media.width(context);
-    return Scaffold(
-      drawer: DrawerC(
-        prenom: widget.user.prenom,
-        nom: widget.user.nom,
-        pathImage: widget.user.imageName,
-      ),
-      appBar: AppBar(
-        backgroundColor: Color(0xffEB7D30),
-        actions: [
-          ActionContainer(
-            Icons.message,
-            tap: () {
-              SaveUser.getUser().then((value) {
-                if (value.isLambda) {
-                  BasicsWidgets.YesOrNoDialogue(
-                    context: context,
-                    msg:
-                        "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
-                    YesText: "J'adhère",
-                    NoText: "Non merci",
-                    NonPressed: () {
-                      Navigator.pop(context);
-                    },
-                    YesPressed: () =>
-                        Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => Adhesion(),
-                    )),
-                  );
-                } else {
-                  SaveSuperUser.getSuperUser().then((value) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Messagerie(
-                          superUser: value,
-                        ),
-                      ),
-                    );
-                  });
-                }
-              });
+  Widget PostEnHauteur(
+    double w,
+    int index,
+  ) {
+    return Container(
+      width: w,
+      child: Obx(
+        () => PostContainer(
+            UserType: postenHc.listPosts[index].userType!,
+            Portee: postenHc.listPosts[index].Portee,
+            idPost: postenHc.listPosts[index].idPost!,
+            idProprioPost: postenHc.listPosts[index].idUser,
+            idUserClick: user.Uid!,
+            datePost: DateDifference.dateFromServerToDateTime(
+                postenHc.listPosts[index].date!),
+            CommentTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CommentaireVue(
+                        UserType: postenHc.listPosts[index].userType!,
+                        Portee: postenHc.listPosts[index].Portee,
+                        idProprioPost: postenHc.listPosts[index].idUser,
+                        datePost: DateDifference.dateFromServerToDateTime(
+                            postenHc.listPosts[index].date!),
+                        UsNom: user.nom,
+                        UsPrenom: user.prenom,
+                        UsProfilPath: user.imagePath!,
+                        idPost: postenHc.listPosts[index].idPost!,
+                        idUser: user.Uid!,
+                        isLike: postc.isLicked[index],
+                        Legende: postenHc.listPosts[index].Legende!,
+                        nbrAime:
+                            postenHc.nbrAime[index].toString().split("[").first,
+                        Nom: postenHc.listPosts[index].userNom!,
+                        Prenom: postenHc.listPosts[index].userPrenom!,
+                        PathContenu: postenHc.listPosts[index].PathContenu!,
+                        PathProfile: postenHc.listPosts[index].userPathProfile!,
+                        TypeContenue: postenHc.listPosts[index].type),
+                  ));
             },
-          ),
-          ActionContainer(
-            Icons.notifications,
-            tap: () {
-              SaveUser.getUser().then((value) {
-                if (value.isLambda) {
-                  BasicsWidgets.YesOrNoDialogue(
-                    context: context,
-                    msg:
-                        "Vous n'êtes pas éligible pour accéder à cet option, veuillez adhérer la plateforme.",
-                    YesText: "J'adhère",
-                    NoText: "Non merci",
-                    NonPressed: () {
-                      Navigator.pop(context);
-                    },
-                    YesPressed: () =>
-                        Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => Adhesion(),
-                    )),
-                  );
-                } else {
-                  SaveSuperUser.getSuperUser().then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Notification1(
-                          Portee: value.type,
-                          imagePathUser: value.imagePath,
-                        ),
-                      ),
-                    );
-                  });
-                }
-              });
+            onJaimeTap: () async {
+              await dbServices().actionLickOrDislickPH(
+                  postenHc.listPosts[index].idPost!, index);
             },
-          ),
-        ],
+            isLike: postenHc.isLicked[index],
+            Legende: postenHc.listPosts[index].Legende,
+            nbrAime: postenHc.nbrAime[index].toString().split("[").first,
+            Nom: postenHc.listPosts[index].userNom!,
+            Prenom: postenHc.listPosts[index].userPrenom!,
+            PathContenu: postenHc.listPosts[index].PathContenu!,
+            PathProfile: postenHc.listPosts[index].userPathProfile!,
+            TypeContenue: postenHc.listPosts[index].type),
       ),
-      body: Container(
-        color: Colors.grey.shade300,
-        height: h,
-        width: w,
-        child: !get
-            ? Center(
-                child: Center(
-                  child: Container(
-                    width: w * .3,
-                    child: Lottie.asset("assets/Load.json"),
-                  ),
-                ),
-              )
-            : RefreshIndicator(
-                color: AppData.BasicColor,
-                onRefresh: () async {
-                  getPosts(typeUser);
-                },
-                child: Center(
-                  child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: h * 0.02,
-                                  bottom: h * 0.02,
-                                  left: w * 0.08),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.grey,
-                                    backgroundImage: NetworkImage(
-                                      widget.user.imageName,
-                                    ),
-                                    radius: h * 0.03,
-                                  ),
-                                  SizedBox(width: 10),
-                                  PostTF(),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: w,
-                              child: FutureBuilder<dynamic>(
-                                  future: getNbrAimes(data[index]['idPost']),
-                                  builder: (context, sn) {
-                                    bool isLiked = sn.hasData
-                                        ? sn.data["idUser"][2] == 1
-                                        : false;
-                                    return PostContainer(
-                                      UserType:typeUser,
-
-                                      Portee: data[index]['Portee'],
-                                      
-                                      idPost: data[index]['idPost'],
-                                      idProprioPost:data[index]['idSuper'] ,
-                                      idUserClick: widget.user.Id,
-                                      datePost: DateDifference
-                                          .DateFromServerToDateTime(
-                                              data[index]),
-                                      CommentTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CommentaireVue(
-                                      UserType:typeUser,
-
-                                                    Portee: data[index]['Portee'],
-                                                    idProprioPost:data[index]['idSuper'] ,
-                                                datePost: DateDifference
-                                                    .DateFromServerToDateTime(
-                                                        data[index]),
-                                                UsNom: widget.user.nom,
-                                                UsPrenom: widget.user.prenom,
-                                                UsProfilPath:
-                                                    widget.user.imageName,
-                                                idPost: data[index]['idPost'],
-                                                idUser: widget.user.Id,
-                                                isLike: isLiked,
-                                                Legende: data[index]['Legende'],
-                                                nbrAime: (!sn.hasData ||
-                                                        sn.data?["idUser"][1] ==
-                                                            null)
-                                                    ? "..."
-                                                    : sn.data["idUser"][1]
-                                                        .toString(),
-                                                Nom: data[index]['nom'],
-                                                Prenom: data[index]['prenom'],
-                                                PathContenu: data[index]
-                                                    ['PathContenu'],
-                                                PathProfile: data[index]
-                                                    ['imagePath'],
-                                                TypeContenue: data[index]
-                                                    ['type'],
-                                              ),
-                                            ));
-                                      },
-                                      onJaimeTap: () async {
-                                        print('Hello world $isLiked');
-                                        setState(() {
-                                          isLiked = !isLiked;
-                                        });
-
-                                        print('Hello world222 $isLiked');
-
-                                        Aimer(data[index]['idPost'])
-                                            .then((aime) {});
-                                      },
-                                      isLike: isLiked,
-                                      Legende: data[index]['Legende'],
-                                      nbrAime: (!sn.hasData ||
-                                              sn.data?["idUser"][1] == null)
-                                          ? "..."
-                                          : sn.data["idUser"][1].toString(),
-                                      Nom: data[index]['nom'],
-                                      Prenom: data[index]['prenom'],
-                                      PathContenu: data[index]['PathContenu'],
-                                      PathProfile: data[index]['imagePath'],
-                                      TypeContenue: data[index]['type'],
-                                    );
-                                  }),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return Container(
-                          width: w,
-                          child: FutureBuilder<dynamic>(
-                              future: getNbrAimes(data[index]['idPost']),
-                              builder: (context, sn) {
-                                bool isLiked = sn.hasData
-                                    ? sn.data["idUser"][2] == 1
-                                    : false;
-                                return PostContainer(
-                                      UserType:typeUser,
-
-                                  Portee: data[index]['Portee'],
-                                  idPost: data[index]['idPost'],
-                                  idProprioPost:data[index]['idSuper'] ,
-                                  idUserClick: widget.user.Id,
-                                  datePost:
-                                      DateDifference.DateFromServerToDateTime(
-                                          data[index]),
-                                  CommentTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => CommentaireVue(
-                                      UserType:typeUser,
-
-                                            Portee: data[index]['Portee'],
-                                            
-                                            idProprioPost:data[index]['idSuper'] ,
-                                            datePost: DateDifference
-                                                .DateFromServerToDateTime(
-                                                    data[index]),
-                                            UsNom: widget.user.nom,
-                                            UsPrenom: widget.user.prenom,
-                                            UsProfilPath: widget.user.imageName,
-                                            idPost: data[index]['idPost'],
-                                            idUser: widget.user.Id,
-                                            isLike: isLiked,
-                                            Legende: data[index]['Legende'],
-                                            nbrAime: (!sn.hasData ||
-                                                    sn.data?["idUser"][1] ==
-                                                        null)
-                                                ? "..."
-                                                : sn.data["idUser"][1]
-                                                    .toString(),
-                                            Nom: data[index]['nom'],
-                                            Prenom: data[index]['prenom'],
-                                            PathContenu: data[index]
-                                                ['PathContenu'],
-                                            PathProfile: data[index]
-                                                ['imagePath'],
-                                            TypeContenue: data[index]['type'],
-                                          ),
-                                        ));
-                                  },
-                                  isLike: isLiked,
-                                  onJaimeTap: () async {
-                                    Aimer(data[index]['idPost']).then((aime) {
-                                      setState(() {
-                                        isLiked = isLiked;
-                                      });
-                                    });
-                                  },
-                                  Legende: data[index]['Legende'],
-                                  nbrAime: (!sn.hasData ||
-                                          sn.data?["idUser"][1] == null)
-                                      ? "..."
-                                      : sn.data["idUser"][1].toString(),
-                                  Nom: data[index]['nom'],
-                                  Prenom: data[index]['prenom'],
-                                  PathContenu: data[index]['PathContenu'],
-                                  PathProfile: data[index]['imagePath'],
-                                  TypeContenue: data[index]['type'],
-                                );
-                              }),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-      ),
-      bottomNavigationBar: BottomNavigation(isHome: true),
     );
   }
+
+  Future<bool> onWillPop() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Voulez-vous quitter l\'application ?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Non'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text('Oui'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                exit(0);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return false;
+  }
+
+  // Future<void> onRefresh() async {
+  //   postc.getPosts();
+  // }
 }

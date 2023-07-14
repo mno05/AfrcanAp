@@ -6,9 +6,7 @@ class DateDifference {
     int days = difference.inDays;
     int months = (date2.year - date1.year) * 12 + date2.month - date1.month;
     int years = date2.year - date1.year;
-
     String timeAgo;
-
     if (years > 0) {
       timeAgo = 'il y a $years an${years == 1 ? '' : 's'}';
     } else if (months > 0) {
@@ -22,22 +20,16 @@ class DateDifference {
     } else {
       timeAgo = "A l'instant";
     }
-
     return timeAgo;
   }
-
-
-
   static String time(DateTime date1, DateTime date2) {
     Duration difference = date2.difference(date1);
-    int minutes = difference.inMinutes;
-    int hours = difference.inHours;
+    // int minutes = difference.inMinutes;
+    // int hours = difference.inHours;
     int days = difference.inDays;
     int months = (date2.year - date1.year) * 12 + date2.month - date1.month;
     int years = date2.year - date1.year;
-
     String timeAgo;
-
     if (years > 0) {
       timeAgo = '$years an${years == 1 ? '' : 's'}';
     } else if (months > 0) {
@@ -55,16 +47,14 @@ class DateDifference {
     else {
       timeAgo = "A l'instant";
     }
-
     return timeAgo;
   }
-
-  static DateTime DateFromServerToDateTime(DateFromServer) {
-    String year = DateFromServer["date"].toString().split("-").first;
-    String month = DateFromServer["date"].toString().split("-")[1];
+  static DateTime dateFromServerToDateTime(String dateFromServer) {
+    String year = dateFromServer.split("-").first;
+    String month = dateFromServer.split("-")[1];
     String day =
-        DateFromServer["date"].toString().split("-").last.split(" ").first;
-    String hour = DateFromServer["date"]
+        dateFromServer.split("-").last.split(" ").first;
+    String hour = dateFromServer
         .toString()
         .split("-")
         .last
@@ -72,7 +62,7 @@ class DateDifference {
         .last
         .split(":")
         .first;
-    String minute = DateFromServer["date"]
+    String minute = dateFromServer
         .toString()
         .split("-")
         .last

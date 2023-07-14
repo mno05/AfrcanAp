@@ -1,18 +1,21 @@
-import 'dart:developer';
+// ignore_for_file: must_be_immutable
 import 'dart:io';
 import 'package:african_ap/Controllers/PostController.dart';
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveSuperUser.dart';
+import 'package:african_ap/Data/Instantane.dart';
+import 'package:african_ap/Data/User.dart';
 import 'package:african_ap/Models/Post.dart';
+import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/DateDifference.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
+import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/PostModif.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/VideoPlayer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:video_player/video_player.dart';
 
 class PostContainer extends StatefulWidget {
   String idPost;
@@ -55,7 +58,7 @@ class PostContainer extends StatefulWidget {
 }
 
 class _PostContainerState extends State<PostContainer> {
-  bool like = false;
+  late bool like;
   String nbLike = "";
   String dropdownValue = "Option 1";
   @override
@@ -247,10 +250,12 @@ class _PostContainerState extends State<PostContainer> {
                       color: Colors.blueAccent,
                     ),
                     SizedBox(width: w * .02),
-                    Text(widget.nbrAime),
+                    Text((widget.nbrAime)),
                     SizedBox(width: w * .02),
                     Text(
-                      "personnes ont aimés ça",
+                      (widget.nbrAime != "1")
+                          ? "personnes ont aimé ça"
+                          : "personne a aimé ça",
                       style: GoogleFonts.nunito(),
                     ),
                   ],
@@ -272,12 +277,8 @@ class _PostContainerState extends State<PostContainer> {
                       padding: EdgeInsets.all(3),
                       onPressed: () {
                         widget.onJaimeTap!();
-                        print('${nbLike}');
                         setState(() {
                           like = !like;
-                          try {
-                            nbLike = (int.parse(nbLike) + 1).toString();
-                          } catch (e) {}
                         });
                       },
                       icon: Column(
@@ -310,38 +311,60 @@ class _PostContainerState extends State<PostContainer> {
                     IconButton(
                       padding: EdgeInsets.all(3),
                       onPressed: () {
-                        BasicsWidgets.YesOrNoDialogue(
-                            context: context,
-                            msg:
-                                "Avec quelle portée voulez vous républier ce post?",
-                            NoText: "Restreint au membre",
-                            YesText: "Visible pour tous",
-                            YesPressed: () {
-                              PostController.Republier(
-                                context,
-                                Post(
-                                  idUser: widget.idUserClick,
-                                  Legende: widget.Legende,
-                                  Portee: "Tout",
-                                  type: widget.TypeContenue,
-                                  PathContenu: widget.PathContenu,
-                                  fileData: File(""),
-                                ),
-                              );
-                            },
-                            NonPressed: () {
-                              PostController.Republier(
-                                context,
-                                Post(
-                                  idUser: widget.idUserClick,
-                                  Legende: widget.Legende,
-                                  Portee: widget.UserType,
-                                  type: widget.TypeContenue,
-                                  PathContenu: widget.PathContenu,
-                                  fileData: File(""),
-                                ),
-                              );
-                            });
+                        UserM user = Instantane.getUser();
+                        if (user.isLambda) {
+                          BasicsWidgets.YesOrNoDialogue(
+                              context: context,
+                              msg:
+                                  "Vous ne pouvez pas républier ce post, veuillez adhérer la plateforme.",
+                              YesText: "J'adhère",
+                              NoText: "Non merci",
+                              NonPressed: () {
+                                Navigator.pop(context);
+                              },
+                              YesPressed: () => Get.to(() => Adhesion()));
+                        } else {
+                          BasicsWidgets.YesOrNoDialogue(
+                              context: context,
+                              msg:
+                                  "Avec quelle portée voulez vous républier ce post?",
+                              NoText: "Restreint au membre",
+                              YesText: "Visible pour tous",
+                              YesPressed: () {
+                                PostController.Republier(
+                                  context,
+                                  Post(
+                                    date: DateTime.now().toString(),
+                                    userNom: user.nom,
+                                    userPrenom: user.prenom,
+                                    userType: user.type,
+                                    userPathProfile: user.imagePath,
+                                    idUser: user.Uid!,
+                                    Legende: widget.Legende,
+                                    Portee: 'Tout',
+                                    type: widget.TypeContenue,
+                                    PathContenu: widget.PathContenu,
+                                  ),
+                                );
+                              },
+                              NonPressed: () {
+                                PostController.Republier(
+                                  context,
+                                  Post(
+                                    date: DateTime.now().toString(),
+                                    userNom: user.nom,
+                                    userPrenom: user.prenom,
+                                    userType: user.type,
+                                    userPathProfile: user.imagePath,
+                                    idUser: user.Uid!,
+                                    Legende: widget.Legende,
+                                    Portee: widget.UserType,
+                                    type: widget.TypeContenue,
+                                    PathContenu: widget.PathContenu,
+                                  ),
+                                );
+                              });
+                        }
                       },
                       icon: Column(
                         children: [

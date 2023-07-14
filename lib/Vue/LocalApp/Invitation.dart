@@ -32,7 +32,8 @@ class _InvitationState extends State<Invitation> {
     if (await Permission.contacts.isGranted) {
       fetchContacts();
     } else {
-      await Permission.contacts.request();
+      // await Permission.contacts.request();
+      fetchContacts();
     }
   }
 
@@ -68,7 +69,7 @@ class _InvitationState extends State<Invitation> {
                         "sms:${contacts[index].phones!.isEmpty ? "0" : contacts[index].phones![0].value!}?body='Bonjour\nJ'utilise l'application AfricanAp et je vous invite à réjoindre la communauté.'";
                     if (await canLaunchUrlString(sms)) {
                       launchUrlString(sms);
-                    }else{
+                    } else {
                       log("Pas moyen: $sms");
                     }
                   },

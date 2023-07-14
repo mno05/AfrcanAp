@@ -1,9 +1,10 @@
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveUser.dart';
+import 'package:african_ap/Data/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/FormulaireAdh.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Adhesion extends StatelessWidget {
   const Adhesion({super.key});
@@ -122,20 +123,20 @@ class Adhesion extends StatelessWidget {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      SaveUser.getUser().then((user) {
-                        if(user.isLambda){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => FormAdh(user: user)));
-
-                        }else{
+                      SaveSuperUser.getSuperUser().then((user) {
+                        if (user.isLambda) {
+                          // log(user.toString());
+                          // ChangePage.Push(context: context, push: FormAdh());
+                          Get.to(() => FormAdh(user: user,));
+                        } else {
                           BasicsWidgets.alert("Vous êtes déjà membre", context);
                         }
-                      } 
-                      );
+                      });
                     },
                     child: Text("J'adhére"),
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(AppData.BasicColor)
-                    ),
+                        backgroundColor:
+                            MaterialStateProperty.all(AppData.BasicColor)),
                   ),
                 )
               ],

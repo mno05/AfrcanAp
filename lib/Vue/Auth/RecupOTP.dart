@@ -1,29 +1,13 @@
-import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
 
-import 'package:african_ap/Controllers/LoginController.dart';
-import 'package:african_ap/Controllers/SingInWith.dart';
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Models/User.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/ChangePassWord.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
-import 'package:african_ap/Vue/LocalApp/Principal.dart';
-import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonC.dart';
-import 'package:african_ap/Vue/Widgets/BoutonCusm.dart';
 import 'package:african_ap/Vue/Widgets/ChangePage.dart';
-import 'package:african_ap/Vue/Widgets/LoginTextField.dart';
-import 'package:african_ap/Vue/Widgets/TextFieldC.dart';
 import 'package:african_ap/Vue/Widgets/TxtFC.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:toast/toast.dart';
 
 class RecupOTP extends StatefulWidget {

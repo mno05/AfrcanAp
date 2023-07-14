@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/SaveUser.dart';
-import 'package:african_ap/Models/User.dart';
+import 'package:african_ap/Data/Instantane.dart';
+import 'package:african_ap/Models/User2.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BoutonC.dart';
 import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:african_ap/Vue/Widgets/TxtFC.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
@@ -81,16 +82,11 @@ class BasicsWidgets {
       required int sec,
       required BuildContext context,
       required String lottie}) {
-    // Navigator.pop(context);
+    Navigator.pop(context);
     Timer(
       Duration(seconds: sec),
-      () async {
-        UserM user = await SaveUser.getUser();
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Principal(user: user),
-            ));
+      () {
+        Get.offAll(()=>Principal());
       },
     );
     return showDialog(
