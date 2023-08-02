@@ -4,6 +4,7 @@ import 'package:african_ap/Data/Instantane.dart';
 import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Services/SuperUserServices.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
+import 'package:african_ap/Vue/LocalApp/Roi&charte.dart';
 import 'package:african_ap/Vue/Widgets/TextFieldC.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -50,7 +51,9 @@ class _FormAdhState extends State<FormAdh> {
   bool selectedDate = false;
   String datevalue = "";
   String SelectedItem = "Statut professionnel*";
-  bool checkboxValue = true;
+  bool checkboxValue = false;
+  bool roiValue = false;
+
   @override
   void initState() {
     prenom.text = widget.user.prenom;
@@ -239,12 +242,56 @@ class _FormAdhState extends State<FormAdh> {
                             ),
                           ),
                         ),
+                        
+                      ],
+                    ),
+                    SizedBox(height: h * 0.02),
+                      Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Checkbox(
+                          value: roiValue,
+                          onChanged: (value) {
+                            setState(() {
+                              roiValue = value!;
+                            });
+                          },
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          width: w * .8,
+                          child: Wrap(
+                            children: [
+                              Text(
+                                "Je confirme d'avoir lu le R.O.I et la charte*",
+                                textAlign: TextAlign.start,
+                                style: GoogleFonts.nunito(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Get.to(()=>RoiCharte()),
+                                child: Text(
+                                  "(Lire le R.O.I et la charte)",
+                                  textAlign: TextAlign.start,
+                                  
+                                  style: GoogleFonts.nunito(
+                                    color: Colors.blue,
+                              
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
                       ],
                     ),
                     SizedBox(height: h * 0.02),
                     ElevatedButton(
                       onPressed: () {
-                        // log(widget.user.Uid!);
+                        if (roiValue && checkboxValue) {
                         SuperUserServices.Adhesion(
                             adresse: adresse,
                             codePostal: codePostal,
@@ -264,6 +311,14 @@ class _FormAdhState extends State<FormAdh> {
                             context: context,
                             userId: widget.user.Uid,
                             userimageName: widget.user.imagePath);
+                        } else {
+                          if (checkboxValue) {
+                            toast("Veuillez cocher que vous avez lu le ROI et Charte"); 
+                          } else {
+                            toast("Veuillez cocher que vous avez pris connaissance du réglement d'ordre");
+                          }
+                        }
+                        // log(widget.user.Uid!);
                       },
                       child: Text("Adhérer"),
                       style: ButtonStyle(

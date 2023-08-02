@@ -1,21 +1,14 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 import 'package:african_ap/GetXControllers/MessageController.dart';
 import 'package:african_ap/Services/dbServices.dart';
 import 'package:african_ap/Tools/DateDifference.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:african_ap/Controllers/MessageController.dart';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Models/Message.dart';
 import 'package:african_ap/Models/SuperUser.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Widgets/StateCircle.dart';
 import 'package:flutter/material.dart';
-import 'package:grouped_list/grouped_list.dart';
-import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class Message extends StatefulWidget {

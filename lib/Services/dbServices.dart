@@ -109,12 +109,6 @@ class dbServices {
   }
 
   Future<UserM> getUserM(uid) async {
-    // late UserM user;
-    // await db.collection("users").doc(uid).get().then((value) {
-    //   log(value.data().toString());
-    //   // user=UserM.fromFirestor(value);
-    // });
-
     final ref = await refUserDocs(uid);
     final doc = await ref.get();
     // log(doc.toString());
@@ -310,8 +304,6 @@ class dbServices {
 
   Query<Map<String, dynamic>> getPost() {
     UserM user = Instantane.getUser();
-    log("lsjfdlfjksjdfkskdfjlksdfjsdkjfjsdlkfjlksdjfklsdjkf " +
-        user.type.toString());
     return (user.type != null)
         ? db
             .collection("posts")
@@ -323,7 +315,6 @@ class dbServices {
             .where("Portee", isEqualTo: 'Tout')
             .where("valide", isEqualTo: true)
             .orderBy("date", descending: true);
-
     // .orderBy("date");
   }
 
@@ -332,13 +323,13 @@ class dbServices {
     return (user.type != null)
         ? db
             .collection("postsHauteur")
-            .where("Portee", whereIn: [user.type, "Tout"])
             .orderBy("date", descending: true)
+            .where("Portee", whereIn: [user.type, "Tout"])
             .limit(2)
         : db
             .collection("postsHauteur")
-            .where("Portee", whereIn: ["Tout"])
             .orderBy("date", descending: true)
+            .where("Portee", whereIn: ["Tout"])
             .limit(2);
   }
 
@@ -501,7 +492,7 @@ class dbServices {
       {required String id}) async {
     return await db
         .collection("commentaires")
-        .where("idCommentaire", isEqualTo: id)
+        .where("idPost", isEqualTo: id)
         .orderBy("date", descending: true)
         .get();
   }

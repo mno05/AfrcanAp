@@ -1,12 +1,8 @@
 import 'dart:async';
 
 import 'package:african_ap/Data/AppData.dart';
-import 'package:african_ap/Data/Instantane.dart';
-import 'package:african_ap/Models/User2.dart';
-import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/Principal.dart';
 import 'package:african_ap/Vue/Widgets/BoutonC.dart';
-import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:african_ap/Vue/Widgets/TxtFC.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,7 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 class BasicsWidgets {
-  static alert(String msg, BuildContext context, {Titre = "Message"}) {
+  static alert(String msg, BuildContext context,
+      {Titre = "Message",}) {
     // Navigator.pop(context);
     return showDialog(
         barrierDismissible: false,
@@ -35,6 +32,27 @@ class BasicsWidgets {
         }));
   }
 
+ static alertWithOkAction(String msg, BuildContext context, void Function()? onPressed,
+      {Titre = "Message"}) {
+    // Navigator.pop(context);
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            // title: Text(Titre),
+            content: Text(
+              msg,
+              style: GoogleFonts.nunito(),
+            ),
+            actions: [
+              TextButton(
+                  onPressed:  onPressed,
+                  child: Text("OK"))
+            ],
+          );
+        }));
+  }
   static alertWithLottie(
       {required String msg,
       required BuildContext context,
@@ -86,7 +104,7 @@ class BasicsWidgets {
     Timer(
       Duration(seconds: sec),
       () {
-        Get.offAll(()=>Principal());
+        Get.offAll(() => Principal());
       },
     );
     return showDialog(

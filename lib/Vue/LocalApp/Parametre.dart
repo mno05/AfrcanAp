@@ -2,7 +2,10 @@ import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/LocalApp/Adhesion.dart';
 import 'package:african_ap/Vue/LocalApp/Compte.dart';
+import 'package:african_ap/Vue/LocalApp/Principal.dart';
+import 'package:african_ap/Vue/LocalApp/Roi&charte.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Parametre extends StatelessWidget {
   const Parametre({super.key});
@@ -96,14 +99,17 @@ class Parametre extends StatelessWidget {
                 ),
               ),
               child: ListTile(
+                onTap: () {
+                  Get.off(()=>RoiCharte());
+                },
                 leading: Icon(
                   Icons.note_alt_outlined,
                   size: 50,
-                  color: Colors.black12,
+                  color: Colors.black54,
                 ),
                 title: Text(
                   "ROI et Charte",
-                  style: TextStyle(fontSize: w * 0.045, color: Colors.black12),
+                  style: TextStyle(fontSize: w * 0.045, color: Colors.black54),
                 ),
               ),
             ),
@@ -119,7 +125,9 @@ class Parametre extends StatelessWidget {
                 children: [
                   Text("Version 1.0.0"),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.offAll(()=>Principal());
+                      },
                       child: Text(
                         "Quitter",
                         style: TextStyle(

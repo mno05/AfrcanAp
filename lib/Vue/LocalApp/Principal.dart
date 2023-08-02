@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:african_ap/Data/User.dart';
 import 'package:african_ap/Data/Instantane.dart';
+import 'package:african_ap/GetXControllers/MembreValideController.dart';
 import 'package:african_ap/GetXControllers/MessageController.dart';
 import 'package:african_ap/GetXControllers/PostContoller.dart';
 import 'package:african_ap/GetXControllers/PostEnHContoller.dart';
@@ -37,8 +38,10 @@ class _PrincipalState extends State<Principal> {
   PostXcontroller postc = Get.put(PostXcontroller());
   PostenHXcontroller postenHc = Get.put(PostenHXcontroller());
   MessageXController msgc = Get.put(MessageXController());
+  MembreValideController membrec = Get.put(MembreValideController());
 
   late UserM user;
+
   // @override
   // void setState(fn) {
   //   if (mounted) {
@@ -88,6 +91,7 @@ class _PrincipalState extends State<Principal> {
               onRefresh: () async {
                 postc.getPosts();
                 postenHc.getPosts();
+                // listPosts.sort();
               },
               child: Obx(
                 () => (postc.nbr.value == -1)
@@ -135,7 +139,7 @@ class _PrincipalState extends State<Principal> {
                                             physics:
                                                 NeverScrollableScrollPhysics(),
                                             shrinkWrap: true,
-                                            itemCount: 2,
+                                            itemCount: postenHc.nbr.value,
                                             itemBuilder: (context, index) =>
                                                 PostEnHauteur(w, index),
                                           ),
@@ -158,6 +162,7 @@ class _PrincipalState extends State<Principal> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     CommentaireVue(
+                                                  index: index,
                                                   UserType: postc
                                                       .listPosts[index]
                                                       .userType!,
@@ -240,6 +245,7 @@ class _PrincipalState extends State<Principal> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => CommentaireVue(
+                                                  index: index,
                                                   UserType: postc
                                                       .listPosts[index]
                                                       .userType!,
@@ -322,7 +328,9 @@ class _PrincipalState extends State<Principal> {
                       NonPressed: () {
                         Navigator.pop(context);
                       },
-                      YesPressed: () => Get.to(() => Adhesion()));
+                      YesPressed: () {
+                            Navigator.pop(context);
+                            Get.to(() => Adhesion());});
 
                   // Navigator.of(context).push(MaterialPageRoute(
                   //   builder: (context) => Adhesion(),
@@ -351,7 +359,9 @@ class _PrincipalState extends State<Principal> {
                       NonPressed: () {
                         Navigator.pop(context);
                       },
-                      YesPressed: () => Get.to(() => Adhesion()));
+                      YesPressed: () {
+                            Navigator.pop(context);
+                            Get.to(() => Adhesion());});
 
                   // Navigator.of(context).push(MaterialPageRoute(
                   //   builder: (context) => Adhesion(),
@@ -411,7 +421,9 @@ class _PrincipalState extends State<Principal> {
                   NonPressed: () {
                     Navigator.pop(context);
                   },
-                  YesPressed: () => Get.to(() => Adhesion()));
+                 YesPressed: () {
+                            Navigator.pop(context);
+                            Get.to(() => Adhesion());});
             } else {
               Get.to(() => PostVue(superUser: us));
             }
@@ -426,52 +438,59 @@ class _PrincipalState extends State<Principal> {
     return Container(
       width: w,
       child: Obx(
-        () => PostContainer(
-            UserType: postenHc.listPosts[index].userType!,
-            Portee: postenHc.listPosts[index].Portee,
-            idPost: postenHc.listPosts[index].idPost!,
-            idProprioPost: postenHc.listPosts[index].idUser,
-            idUserClick: user.Uid!,
-            datePost: DateDifference.dateFromServerToDateTime(
-                postenHc.listPosts[index].date!),
-            CommentTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CommentaireVue(
-                        UserType: postenHc.listPosts[index].userType!,
-                        Portee: postenHc.listPosts[index].Portee,
-                        idProprioPost: postenHc.listPosts[index].idUser,
-                        datePost: DateDifference.dateFromServerToDateTime(
-                            postenHc.listPosts[index].date!),
-                        UsNom: user.nom,
-                        UsPrenom: user.prenom,
-                        UsProfilPath: user.imagePath!,
-                        idPost: postenHc.listPosts[index].idPost!,
-                        idUser: user.Uid!,
-                        isLike: postc.isLicked[index],
-                        Legende: postenHc.listPosts[index].Legende!,
-                        nbrAime:
-                            postenHc.nbrAime[index].toString().split("[").first,
-                        Nom: postenHc.listPosts[index].userNom!,
-                        Prenom: postenHc.listPosts[index].userPrenom!,
-                        PathContenu: postenHc.listPosts[index].PathContenu!,
-                        PathProfile: postenHc.listPosts[index].userPathProfile!,
-                        TypeContenue: postenHc.listPosts[index].type),
-                  ));
-            },
-            onJaimeTap: () async {
-              await dbServices().actionLickOrDislickPH(
-                  postenHc.listPosts[index].idPost!, index);
-            },
-            isLike: postenHc.isLicked[index],
-            Legende: postenHc.listPosts[index].Legende,
-            nbrAime: postenHc.nbrAime[index].toString().split("[").first,
-            Nom: postenHc.listPosts[index].userNom!,
-            Prenom: postenHc.listPosts[index].userPrenom!,
-            PathContenu: postenHc.listPosts[index].PathContenu!,
-            PathProfile: postenHc.listPosts[index].userPathProfile!,
-            TypeContenue: postenHc.listPosts[index].type),
+        () => (postenHc.nbr.value == -1)
+            ? Container()
+            : PostContainer(
+                UserType: postenHc.listPosts[index].userType!,
+                Portee: postenHc.listPosts[index].Portee,
+                idPost: postenHc.listPosts[index].idPost!,
+                idProprioPost: postenHc.listPosts[index].idUser,
+                idUserClick: user.Uid!,
+                datePost: DateDifference.dateFromServerToDateTime(
+                    postenHc.listPosts[index].date!),
+                CommentTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CommentaireVue(
+                            isHauteur: true,
+                            index: index,
+                            UserType: postenHc.listPosts[index].userType!,
+                            Portee: postenHc.listPosts[index].Portee,
+                            idProprioPost: postenHc.listPosts[index].idUser,
+                            datePost: DateDifference.dateFromServerToDateTime(
+                                postenHc.listPosts[index].date!),
+                            UsNom: user.nom,
+                            UsPrenom: user.prenom,
+                            UsProfilPath: user.imagePath!,
+                            idPost: postenHc.listPosts[index].idPost!,
+                            idUser: user.Uid!,
+                            isLike: postc.isLicked[index],
+                            Legende: postenHc.listPosts[index].Legende!,
+                            nbrAime: postenHc.nbrAime[index]
+                                .toString()
+                                .split("[")
+                                .first,
+                            Nom: postenHc.listPosts[index].userNom!,
+                            Prenom: postenHc.listPosts[index].userPrenom!,
+                            PathContenu: postenHc.listPosts[index].PathContenu!,
+                            PathProfile:
+                                postenHc.listPosts[index].userPathProfile!,
+                            TypeContenue: postenHc.listPosts[index].type),
+                      ));
+                },
+                onJaimeTap: () async {
+                  await dbServices().actionLickOrDislickPH(
+                      postenHc.listPosts[index].idPost!, index);
+                },
+                isLike: postenHc.isLicked[index],
+                Legende: postenHc.listPosts[index].Legende,
+                nbrAime: postenHc.nbrAime[index].toString().split("[").first,
+                Nom: postenHc.listPosts[index].userNom!,
+                Prenom: postenHc.listPosts[index].userPrenom!,
+                PathContenu: postenHc.listPosts[index].PathContenu!,
+                PathProfile: postenHc.listPosts[index].userPathProfile!,
+                TypeContenue: postenHc.listPosts[index].type),
       ),
     );
   }

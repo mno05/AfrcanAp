@@ -129,7 +129,7 @@ class Adhesion extends StatelessWidget {
                           // ChangePage.Push(context: context, push: FormAdh());
                           Get.to(() => FormAdh(user: user,));
                         } else {
-                          BasicsWidgets.alert("Vous êtes déjà membre", context);
+                          BasicsWidgets.alert("Vous êtes déjà membre", context,);
                         }
                       });
                     },

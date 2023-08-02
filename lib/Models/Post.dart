@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-class Post {
+class Post{
   String? idPost;
   String idUser;
   String Portee;
@@ -87,4 +87,16 @@ class Post {
       if (fileData != null) "fileData": fileData,
     };
   }
+//   @override
+// int compareTo(Post other) {
+//   // int d1=dateEnNombre(date);
+//   // int d2=dateEnNombre(other.date);
+//   // return d2.compareTo(d1);
+//   DateTime thisDate = DateTime.parse(this.date!);
+//   DateTime otherDate = DateTime.parse(other.date!);
+//   return otherDate.compareTo(thisDate);
+// }
+// dateEnNombre(String? d){
+//   return int.parse(d!.split(".").first.replaceAll(" ", "").replaceAll("-", "").replaceAll(":", ""));
+// }
 }

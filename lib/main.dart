@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           iconColor: Colors.grey,
           focusColor: Colors.grey,
-          
         )
       ),
       // home: Principal(email: "",img: "",nom: "",prenom: "",telephone: ""),

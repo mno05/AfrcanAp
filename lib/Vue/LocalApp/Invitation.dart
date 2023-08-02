@@ -32,7 +32,7 @@ class _InvitationState extends State<Invitation> {
     if (await Permission.contacts.isGranted) {
       fetchContacts();
     } else {
-      // await Permission.contacts.request();
+      await Permission.contacts.request();
       fetchContacts();
     }
   }

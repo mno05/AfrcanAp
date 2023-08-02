@@ -1,17 +1,16 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
 import 'package:african_ap/Vue/Auth/Inscription.dart';
-import 'package:african_ap/Vue/Auth/RecupOTP.dart';
+import 'package:african_ap/Vue/Auth/LoginVue.dart';
 import 'package:african_ap/Vue/Widgets/BascisWidgets.dart';
 import 'package:african_ap/Vue/Widgets/BoutonC.dart';
-import 'package:african_ap/Vue/Widgets/ChangePage.dart';
 import 'package:african_ap/Vue/Widgets/TxtFC.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PasswordForget extends StatefulWidget {
   const PasswordForget({super.key});
@@ -91,97 +90,36 @@ class _PasswordForgetState extends State<PasswordForget> {
                           onPressed: () async {
                             BasicsWidgets.Load(context);
                             if (_key.currentState!.validate()) {
-                              final reponse = await http.post(
-                                  Uri.parse(
-                                      "https://myap.moglich.net/api/EmailOtp/"),
-                                  body: {"email": emailTelephone.text});
-                              if (reponse.statusCode == 200) {
-                                try {
-                                  String rs = reponse.body
-                                      .toString()
-                                      .replaceAll("\n", "");
-                                  var data = jsonDecode(rs);
-                                  var resultat = data["data"];
-                                  int recupOtp = resultat[1];
-                                  String succes = resultat[0];
-                                  if (succes == "Valide") {
-                                    ChangePage.SliderPush(
-                                        context: context,
-                                        push: RecupOTP(
-                                          email: emailTelephone.text,
-                                          recupOTP: recupOtp,
-                                        ));
-                                  } else {
-                                    Navigator.pop(context);
-
-                                    Toast.show(succes);
-                                  }
-                                } catch (e) {
-                                  Navigator.pop(context);
-                                  log(e.toString());
-                                }
-                              }
+                              try {
+                                await FirebaseAuth.instance
+                                    .sendPasswordResetEmail(
+                                  email: emailTelephone.text,
+                                )
+                                    .then((value) {
+                                  BasicsWidgets.alertWithOkAction(
+                                      "Nous vous avons envoyez un lien pour réinitialiser votre mot de passe\nVeuillez vous connectez à votre compte et cliquer sur le lien que nous avons envoyé",
+                                      context, () async {
+                                    const String url =
+                                        "https://mail.google.com/mail/u/0/#inbox/";
+                                    if (await canLaunch(url)) {
+                                      await launch(url).then((value) =>  Get.offAll(() => const LoginVue()));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                "Impossible d'ouvrir Gmail")),
+                                      );
+                                    }
+                                  });
+                                });
+                              } catch (e) {}
                             }
                           },
                         ),
                       ],
                     ),
                   ),
-                  // SizedBox(height: h / 25),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //   children: [
-                  //     Container(
-                  //       height: 0.4,
-                  //       color: Colors.black54,
-                  //       width: w / 4,
-                  //     ),
-                  //     Container(
-                  //       child: Text(
-                  //         "Connectez-vous avec",
-                  //         style: TextStyle(
-                  //           color: Colors.black54,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Container(
-                  //       height: 0.4,
-                  //       color: Colors.black54,
-                  //       width: w / 4,
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(height: h / 50),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.end,
-                  //   children: [
-                  //     Container(
-                  //       height: h / 15,
-                  //       width: w / 3,
-                  //       decoration: BoxDecoration(
-                  //         border: Border.all(
-                  //           width: 1,
-                  //           color: Colors.black54,
-                  //         ),
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //       child: Center(
-                  //           child: Row(
-                  //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         children: [
-                  //           Container(
-                  //             height: 40,
-                  //             width: 40,
-                  //             child: Image.asset("img/google_logo.webp"),
-                  //           ),
-                  //           Text("Google"),
-                  //         ],
-                  //       )),
-                  //     ),
-                  //   ],
-                  // ),
-                  // SizedBox(height: h / 45),
                 ],
               ),
             ),

@@ -65,7 +65,9 @@ class BottomNavigation extends StatelessWidget {
                           NonPressed: () {
                             Navigator.pop(context);
                           },
-                          YesPressed: () => Get.to(() => Adhesion()));
+                          YesPressed: () {
+                            Navigator.pop(context);
+                            Get.to(() => Adhesion());});
                     } else {
                       Get.to(() => Messagerie(superUser: us,));
                     }
@@ -147,7 +149,9 @@ class BottomNavigation extends StatelessWidget {
                             NonPressed: () {
                               Navigator.pop(context);
                             },
-                            YesPressed: () => Get.to(() => Adhesion()));
+                            YesPressed: () {
+                            Navigator.pop(context);
+                            Get.to(() => Adhesion());});
 
                         // Navigator.of(context).push(MaterialPageRoute(
                         //   builder: (context) => Adhesion(),

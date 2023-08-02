@@ -8,7 +8,7 @@ class Commentaire {
   String imagePath;
   String prenom;
   String nom;
-  DateTime date;
+  String date;
   Commentaire({
     this.idCommentaire,
     required this.idUser,
@@ -39,10 +39,10 @@ class Commentaire {
   Map<String, dynamic> toFirestore() {
     return {
       "idCommentaire": idCommentaire,
-      "IdUser": idUser,
-      "IdPost": idPost,
-      "date": date.toString(),
+      "idUser": idUser,
       "idPost": idPost,
+      "date": date.toString(),
+      "contenu":contenu,
       "imagePath": imagePath,
       "prenom": prenom,
       "nom": nom,

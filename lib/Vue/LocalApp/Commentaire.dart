@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:african_ap/Data/AppData.dart';
 import 'package:african_ap/GetXControllers/CommentareController.dart';
+import 'package:african_ap/GetXControllers/PostContoller.dart';
 import 'package:african_ap/Models/Commentaire.dart';
 import 'package:african_ap/Services/dbServices.dart';
 import 'package:african_ap/Tools/MediaQuery.dart';
@@ -8,6 +9,9 @@ import 'package:african_ap/Vue/Widgets/PostContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+
+import '../../GetXControllers/PostEnHContoller.dart';
 
 // ignore: must_be_immutable
 class CommentaireVue extends StatefulWidget {
@@ -23,12 +27,13 @@ class CommentaireVue extends StatefulWidget {
   String UsPrenom;
   String UsNom;
   String Portee;
-
+  int index;
   String idProprioPost;
   DateTime datePost;
   String UserType;
   String nbrAime;
   bool isLike;
+  bool isHauteur;
 
   CommentaireVue(
       {super.key,
@@ -48,6 +53,8 @@ class CommentaireVue extends StatefulWidget {
       required this.nbrAime,
       required this.isLike,
       required this.idProprioPost,
+      required this.index,
+      this.isHauteur = false,
       required this.datePost});
 
   @override
@@ -57,17 +64,30 @@ class CommentaireVue extends StatefulWidget {
 class _CommentaireVueState extends State<CommentaireVue> {
   TextEditingController Cmt = TextEditingController();
   CommentaireXController cmc = Get.put(CommentaireXController());
-  // List<Commentaire> cmts = [];
+  PostXcontroller postc = Get.put(PostXcontroller());
+  PostenHXcontroller postenHc = Get.put(PostenHXcontroller());
+
+  List<Commentaire> cmts = [];
   var dataCommentaires;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    log(widget.idPost);
-    cmc.getAllCommentaires(id: widget.idPost);
+    // log(widget.idPost);
+    cmc.getAllCommentaires(id: widget.idPost).then((value) {
+      setState(() {
+        cmts = value;
+      });
+    });
   }
 
+  @override
+  void dispose() {
+    cmc.viderListCommentaires();
+    // cmc.dispose();
+    super.dispose();
+  }
   // getCommentaires(idPost) async {
   //   // log("Here");
   //   final response = await http.post(
@@ -136,92 +156,163 @@ class _CommentaireVueState extends State<CommentaireVue> {
         backgroundColor: AppData.BasicColor,
       ),
       body: Obx(
-        () => Padding(
-          padding: EdgeInsets.only(
-            bottom: h * .08,
-          ),
-          child: SingleChildScrollView(
-            child: Container(
-              height: h,
-              width: w,
-              child: Flex(
-                direction: Axis.vertical,
-                children: [
-                  ExcludeSemantics(
-                      // flex: 4,
-                      child: Column(
-                    children: [
-                      PostContainer(
-                          Portee: widget.Portee,
-                          UserType: widget.UserType,
-                          idPost: widget.idPost,
-                          idProprioPost: widget.idProprioPost,
-                          idUserClick: widget.idUser,
-                          datePost: widget.datePost,
-                          Legende: widget.Legende,
-                          PathContenu: widget.PathContenu,
-                          Prenom: widget.Prenom,
-                          Nom: widget.Nom,
-                          PathProfile: widget.PathProfile,
-                          TypeContenue: widget.TypeContenue,
-                          onJaimeTap: () {},
-                          CommentTap: () {},
-                          nbrAime: widget.nbrAime,
-                          isLike: widget.isLike),
-                    ],
-                  )),
-                  Expanded(
+        () => (cmc.nbr.value == -1)
+            ? Center(
+                child: Container(
+                  width: w * .3,
+                  child: Lottie.asset("assets/Load.json"),
+                ),
+              )
+            : (cmc.nbr.value == 0)
+                ? Center(
                     child: Padding(
-                      padding: EdgeInsets.only(bottom: h*0.03),
+                    padding: const EdgeInsets.all(8.0),
+                    child: PostContainer(
+                        Portee: widget.Portee,
+                        UserType: widget.UserType,
+                        idPost: widget.idPost,
+                        idProprioPost: widget.idProprioPost,
+                        idUserClick: widget.idUser,
+                        datePost: widget.datePost,
+                        Legende: widget.Legende,
+                        PathContenu: widget.PathContenu,
+                        Prenom: widget.Prenom,
+                        Nom: widget.Nom,
+                        PathProfile: widget.PathProfile,
+                        TypeContenue: widget.TypeContenue,
+                        onJaimeTap: () {},
+                        CommentTap: () {},
+                        nbrAime: widget.nbrAime,
+                        isLike: widget.isLike),
+                  ))
+                : Padding(
+                    padding: EdgeInsets.only(
+                      bottom: h * .08,
+                    ),
+                    child: Center(
                       child: ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          // scrollDirection: Axis,
                           // reverse: true,
-                          itemCount: cmc.listCommentaires.length,
+                          itemCount: cmts.length,
                           itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                      cmc.listCommentaires[index].imagePath),
-                                  // radius: 10,
-                                ),
-                                title: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: (Colors.blue[200]),
+                            if (index == 0) {
+                              return Obx(
+                                () => Column(
+                                  children: [
+                                    PostContainer(
+                                      Portee: widget.Portee,
+                                      UserType: widget.UserType,
+                                      idPost: widget.idPost,
+                                      idProprioPost: widget.idProprioPost,
+                                      idUserClick: widget.idUser,
+                                      datePost: widget.datePost,
+                                      Legende: widget.Legende,
+                                      PathContenu: widget.PathContenu,
+                                      Prenom: widget.Prenom,
+                                      Nom: widget.Nom,
+                                      PathProfile: widget.PathProfile,
+                                      TypeContenue: widget.TypeContenue,
+                                      onJaimeTap: () async {
+                                        if (widget.isHauteur) {
+                                          await dbServices().actionLickOrDislickPH(
+                                              widget.idPost, widget.index);
+                                        } else {
+                                          await dbServices().actionLickOrDislick(
+                                              widget.idPost, widget.index);
+                                        }
+                                      },
+                                      CommentTap: () {},
+                                      nbrAime: (widget.isHauteur)
+                                          ? postenHc.nbrAime[widget.index]
+                                              .toString()
+                                              .split("[")
+                                              .first
+                                          : postc.nbrAime[widget.index]
+                                              .toString()
+                                              .split("[")
+                                              .first,
+                                      isLike: (widget.isHauteur)
+                                          ? postenHc.isLicked[widget.index]
+                                          : postc.isLicked[widget.index],
+                                    ),
+                                    Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(cmts[index].imagePath),
+                                    // radius: 10,
                                   ),
-                                  padding: EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${cmc.listCommentaires[index].prenom} ${cmc.listCommentaires[index].nom}',
-                                        style: GoogleFonts.nunito(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.bold,
+                                  title: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: (Colors.blue[200]),
+                                    ),
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${cmts[index].prenom} ${cmts[index].nom}',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        '${cmc.listCommentaires[index].contenu}',
-                                        style: GoogleFonts.nunito(fontSize: 15),
-                                      ),
-                                    ],
+                                        Text(
+                                          '${cmts[index].contenu}',
+                                          style:
+                                              GoogleFonts.nunito(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          }
-                          // },
-                          ),
+                              )
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(cmts[index].imagePath),
+                                    // radius: 10,
+                                  ),
+                                  title: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: (Colors.blue[200]),
+                                    ),
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${cmts[index].prenom} ${cmts[index].nom}',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${cmts[index].contenu}',
+                                          style:
+                                              GoogleFonts.nunito(fontSize: 15),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            // },
+                          }),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
       bottomSheet: Container(
         padding: EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 10),
@@ -281,10 +372,12 @@ class _CommentaireVueState extends State<CommentaireVue> {
                         nom: widget.UsNom,
                         prenom: widget.UsPrenom,
                         contenu: Cmt.text,
-                        date: DateTime.now());
-                    cmc.listCommentaires.add(cmmt);
-                    await dbServices().commenter(cmmt);
+                        date: DateTime.now().toString());
+                    await cmc.getAllCommentaires(id: widget.idPost);
+                    cmts.add(cmmt);
+                    
                     Cmt.text = "";
+                    await dbServices().commenter(cmmt);
                   }
                 }),
           ],
